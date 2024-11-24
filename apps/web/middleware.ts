@@ -30,10 +30,15 @@ export async function middleware(request: NextRequest) {
     return NextResponse.rewrite(new URL('/not-found', rewriteBaseUrl))
   }
 
+  const userAgent = request.headers.get('User-Agent')
   const headers = new Headers()
 
   headers.set('X-Forwarded-For', request.ip || 'anon')
+  headers.set('X-Real-IP', request.ip || 'anon')
   headers.set('Cookie', request.cookies.toString())
+  if (userAgent) {
+    headers.set('User-Agent', userAgent)
+  }
 
   try {
     const res = await ofetch(

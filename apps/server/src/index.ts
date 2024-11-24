@@ -92,3 +92,4 @@ serve(
 
 export type ApiRoutesType = typeof apiRoutes
 export { type User } from './services/users'
+export default app as ApiRoutesType

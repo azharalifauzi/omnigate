@@ -22,6 +22,10 @@ export const env = createEnv({
     S3_SPACES_ENDPOINT: z.string(),
     S3_SPACES_SECRET_KEY: z.string(),
     S3_SPACES_ACCESS_KEY_ID: z.string(),
+    IS_DOCKER: z
+      .enum(['true', 'false'])
+      .transform((value) => value === 'true')
+      .default('false'),
   },
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL!,
@@ -39,5 +43,6 @@ export const env = createEnv({
     S3_SPACES_SECRET_KEY: process.env.S3_SPACES_SECRET_KEY!,
     S3_SPACES_ACCESS_KEY_ID: process.env.S3_SPACES_ACCESS_KEY_ID!,
     NODE_ENV: process.env.NODE_ENV,
+    IS_DOCKER: process.env.IS_DOCKER,
   },
 })

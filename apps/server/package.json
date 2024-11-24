@@ -20,7 +20,8 @@
     "migrate": "tsx scripts/migrate.ts",
     "migrate:dev": "dotenvx run -f .env -f .env.local -- tsx scripts/migrate.ts",
     "seed": "tsx scripts/seed.ts",
-    "seed:dev": "dotenvx run -f .env -f .env.local -- tsx scripts/seed.ts"
+    "seed:dev": "dotenvx run -f .env -f .env.local -- tsx scripts/seed.ts",
+    "test:unit": "dotenvx run -f .env -f .env.local -- vitest run"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
@@ -32,7 +33,8 @@
     "@types/react": "catalog:react18",
     "@vercel/ncc": "^0.38.3",
     "eslint": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "^2.1.5"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.693.0",

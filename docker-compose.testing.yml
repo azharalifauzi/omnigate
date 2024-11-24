@@ -1,0 +1,25 @@
+services:
+  server:
+    container_name: omnigate-server-testing
+    build:
+      context: .
+      dockerfile: ./docker/testing/Dockerfile-server
+    environment:
+      - NODE_ENV=${NODE_ENV:-test}
+      - IS_DOCKER=${IS_DOCKER:-true}
+      - DATABASE_URL=postgresql://localhost/testdb?user=testuser&password=testpassword
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: testpassword
+      POSTGRES_DB: testdb
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "testuser"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+    volumes:
+      - test_db_data:/var/lib/postgresql/data

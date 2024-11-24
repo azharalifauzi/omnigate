@@ -16,7 +16,8 @@
     },
     "create:migration": {
       "inputs": [".env*"],
-      "cache": false
+      "cache": false,
+      "persistent": true
     },
     "migrate:dev": {
       "inputs": [".env*"],
@@ -33,6 +34,11 @@
     "seed": {
       "inputs": [".env*"],
       "cache": false
+    },
+    "test:unit": {
+      "inputs": [".env*"],
+      "cache": false,
+      "persistent": true
     }
   },
   "globalEnv": ["SESSION_COOKIE_NAME"]

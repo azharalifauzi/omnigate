@@ -9,7 +9,12 @@
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "ui": "pnpm --filter @repo/ui ui",
-    "start": "turbo start"
+    "create:migration": "turbo --filter @repo/server create:migration",
+    "migrate": "turbo migrate",
+    "migrate:dev": "turbo migrate:dev",
+    "seed": "turbo seed",
+    "seed:dev": "turbo seed:dev",
+    "test:unit": "turbo test:unit"
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "^1.24.0",

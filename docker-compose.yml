@@ -2,10 +2,10 @@ version: '3.8'
 
 services:
   server:
-    container_name: ryoa-server
+    container_name: omnigate-server
     build:
       context: .
-      dockerfile: ./docker/Dockerfile-server
+      dockerfile: ./docker/production/Dockerfile-server
     environment:
       - SESSION_COOKIE_NAME=${SESSION_COOKIE_NAME}
       - DEFAULT_ORG_ID=${DEFAULT_ORG_ID}
@@ -22,16 +22,16 @@ services:
       - NODE_ENV=${NODE_ENV:-production}
       - IS_DOCKER=${IS_DOCKER:-true}
   web:
-    container_name: ryoa-web
+    container_name: omnigate-web
     build:
       context: .
-      dockerfile: ./docker/Dockerfile-web
+      dockerfile: ./docker/production/Dockerfile-web
     environment:
       - SESSION_COOKIE_NAME=${SESSION_COOKIE_NAME}
       - IS_DOCKER=${IS_DOCKER:-true}
 
   nginx:
-    image: nginx:latest
+    image: nginx:alpine
     ports:
       - "3000:80"
     volumes:
