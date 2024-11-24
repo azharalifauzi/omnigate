@@ -1,0 +1,45 @@
+{
+  "name": "web",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port 3001",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint . --max-warnings 0"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "catalog:",
+    "@repo/server": "workspace:*",
+    "@repo/ui": "workspace:*",
+    "@t3-oss/env-nextjs": "^0.11.1",
+    "@tanstack/react-query": "^5.60.5",
+    "@tanstack/react-table": "^8.20.5",
+    "dayjs": "catalog:",
+    "hono": "catalog:",
+    "lucide-react": "catalog:",
+    "next": "14.2.8",
+    "nuqs": "^2.2.1",
+    "ofetch": "^1.4.1",
+    "react": "catalog:react18",
+    "react-dom": "catalog:react18",
+    "react-hook-form": "catalog:",
+    "ts-pattern": "^5.5.0",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@next/eslint-plugin-next": "14.2.8",
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/eslint": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:react18",
+    "@types/react-dom": "catalog:react18",
+    "autoprefixer": "^10",
+    "eslint": "catalog:",
+    "http-proxy-middleware": "^3.0.3",
+    "postcss": "^8",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:"
+  }
+}

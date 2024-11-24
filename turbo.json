@@ -1,0 +1,39 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": [".next/**", "!.next/cache/**"]
+    },
+    "lint": {
+      "dependsOn": ["^lint"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "create:migration": {
+      "inputs": [".env*"],
+      "cache": false
+    },
+    "migrate:dev": {
+      "inputs": [".env*"],
+      "cache": false
+    },
+    "migrate": {
+      "inputs": [".env*"],
+      "cache": false
+    },
+    "seed:dev": {
+      "inputs": [".env*"],
+      "cache": false
+    },
+    "seed": {
+      "inputs": [".env*"],
+      "cache": false
+    }
+  },
+  "globalEnv": ["SESSION_COOKIE_NAME"]
+}
