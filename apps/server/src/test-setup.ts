@@ -1,6 +1,7 @@
 import { migrate } from 'drizzle-orm/node-postgres/migrator'
 import { db } from './lib/db'
 import {
+  authMethods,
   organizations,
   otpTokens,
   permissionsToRoles,
@@ -26,6 +27,7 @@ await db.delete(rolesToUsers)
 await db.delete(permissionsToRoles)
 await db.delete(sessions)
 await db.delete(otpTokens)
+await db.delete(authMethods)
 
 await db.insert(organizations).values({
   name: 'Default Organization',

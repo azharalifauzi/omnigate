@@ -91,8 +91,7 @@ const OrganizationDetailFeature = () => {
           <div className="max-w-lg mt-8 bg-blue-100 p-4 rounded-md flex gap-2">
             <AlertCircle />
             <div>
-              You cannot delete default organization, but you using it is
-              optional.
+              You cannot delete default organization, but using it is optional.
             </div>
           </div>
         )}

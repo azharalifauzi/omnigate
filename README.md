@@ -4,5 +4,6 @@
 
 - [ ] Write tests
 - [ ] Documentation
-- [ ] Google sign in
+- [x] Google sign in
 - [ ] Homepage
+- [ ] Feature Flags

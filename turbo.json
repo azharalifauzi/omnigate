@@ -3,33 +3,54 @@
   "ui": "tui",
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env*"
+      ],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        "dist/**"
+      ]
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": [
+        "^lint"
+      ]
     },
     "dev": {
       "cache": false,
       "persistent": true,
-      "inputs": [".env*"]
+      "inputs": [
+        ".env*"
+      ]
     },
     "create:migration": {
-      "inputs": [".env*"],
+      "inputs": [
+        ".env*"
+      ],
       "cache": false,
       "persistent": true
     },
     "migrate": {
-      "inputs": [".env*"],
+      "inputs": [
+        ".env*"
+      ],
       "cache": false
     },
     "seed": {
-      "inputs": [".env*"],
+      "inputs": [
+        ".env*"
+      ],
       "cache": false
     },
     "test:unit": {
-      "inputs": [".env*"],
+      "inputs": [
+        ".env*"
+      ],
       "persistent": true
     }
   },
@@ -47,6 +68,9 @@
     "SMTP_PORT",
     "EMAIL_SENDER",
     "EMAIL_CATCHER",
-    "BACKEND_URL"
+    "BACKEND_URL",
+    "GOOGLE_CLIENT_ID",
+    "GOOGLE_CLIENT_SECRET",
+    "GOOGLE_REDIRECT_URI"
   ]
 }

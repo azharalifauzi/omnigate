@@ -34,7 +34,7 @@ console.log(`Default Organization ID: ${defaultOrg[0]!.id}`)
 let superAdmin = await db
   .insert(schema.users)
   .values({
-    email: 'admin@sidrstudio.com',
+    email: 'admin@acme.com',
     name: 'Admin',
     isEmailVerified: true,
   })
@@ -45,7 +45,7 @@ if (isDbSeeded) {
   superAdmin = await db
     .select()
     .from(schema.users)
-    .where(eq(schema.users.email, 'admin@sidrstudio.com'))
+    .where(eq(schema.users.email, 'admin@acme.com'))
 }
 let superAdminRole = await db
   .insert(schema.roles)

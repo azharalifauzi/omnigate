@@ -31,6 +31,7 @@
     "@types/nodemailer": "^6.4.16",
     "@types/pg": "^8.11.10",
     "@types/react": "catalog:react18",
+    "@types/simple-oauth2": "^5.0.7",
     "@vercel/ncc": "^0.38.3",
     "eslint": "catalog:",
     "typescript": "catalog:",
@@ -54,6 +55,7 @@
     "pg": "^8.13.1",
     "rate-limiter-flexible": "^5.0.4",
     "react": "catalog:react18",
+    "simple-oauth2": "^5.1.0",
     "tsx": "^4.19.2",
     "uuid": "^11.0.3",
     "zod": "catalog:"

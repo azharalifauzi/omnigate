@@ -15,6 +15,13 @@
       "when": 1732431937929,
       "tag": "0001_huge_matthew_murdock",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1732502729289,
+      "tag": "0002_real_fat_cobra",
+      "breakpoints": true
     }
   ]
 }

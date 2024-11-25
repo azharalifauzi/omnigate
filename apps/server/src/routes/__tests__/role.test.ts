@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach, vi, beforeAll } from 'vitest'
-import app from '~/index'
+import app from '~/app'
 import { testClient } from 'hono/testing'
 import { db } from '~/lib/db'
 import { roles } from '~/schemas'

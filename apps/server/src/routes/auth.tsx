@@ -19,10 +19,12 @@ import {
   users,
   usersToOrganizations,
   otpTokens,
+  authMethods,
 } from '~/schemas'
 import { createSessionToken } from '~/utils/session'
 import { v4 as uuidv4 } from 'uuid'
 import { authMiddleware } from '~/middlewares/auth'
+import { googleAuthScope, googleClient } from '~/lib/auth'
 
 const app = new Hono()
   .post(
@@ -76,6 +78,12 @@ const app = new Hono()
         otp,
         expiredAt: expiresAt.toISOString(),
         userId: user.id,
+      })
+
+      await db.insert(authMethods).values({
+        provider: 'passwordless',
+        userId: user.id,
+        providerId: email,
       })
 
       // Send otp to email
@@ -148,6 +156,101 @@ const app = new Hono()
       })
     },
   )
+  .get('/sign-in/google', (c) => {
+    const authorizationUri = googleClient.authorizeURL({
+      redirect_uri: env.GOOGLE_REDIRECT_URI,
+      scope: googleAuthScope.join(' '),
+      state: uuidv4(),
+    })
+
+    return c.redirect(authorizationUri)
+  })
+  .get('/callback/google', async (c) => {
+    const code = c.req.query('code')
+
+    if (!code) {
+      throw new ServerError({
+        statusCode: 400,
+        message: 'Login failed',
+        description: 'Authorization code is missing',
+      })
+    }
+
+    const accessToken = await googleClient.getToken({
+      code,
+      redirect_uri: env.GOOGLE_REDIRECT_URI,
+    })
+
+    const userInfoResponse = await fetch(
+      'https://www.googleapis.com/oauth2/v1/userinfo?alt=json',
+      {
+        headers: { Authorization: `Bearer ${accessToken.token.access_token}` },
+      },
+    )
+
+    const userInfo = await userInfoResponse.json()
+
+    let userId: number
+
+    const existingAuthMethods = await db.query.authMethods.findFirst({
+      where: eq(authMethods.providerId, userInfo.id),
+    })
+
+    if (!existingAuthMethods) {
+      const newUser = await db
+        .insert(users)
+        .values({
+          email: userInfo.email,
+          name: userInfo.name,
+          image: userInfo.picture,
+        })
+        .returning()
+
+      await db.insert(authMethods).values({
+        userId: newUser[0]!.id,
+        provider: 'google',
+        providerId: userInfo.id,
+      })
+
+      await db.insert(usersToOrganizations).values({
+        organizationId: env.DEFAULT_ORG_ID,
+        userId: newUser[0]!.id,
+      })
+
+      const assignedRoles = await db
+        .select()
+        .from(roles)
+        .where(eq(roles.assignedOnSignUp, true))
+
+      if (assignedRoles.length > 0) {
+        await db.insert(rolesToUsers).values(
+          assignedRoles.map((role) => ({
+            roleId: role.id,
+            userId: newUser[0]!.id,
+            organizationId: env.DEFAULT_ORG_ID,
+          })),
+        )
+      }
+
+      userId = newUser[0]!.id
+    } else {
+      userId = existingAuthMethods.userId
+    }
+
+    const sessionId = uuidv4()
+    const sessionToken = createSessionToken(sessionId)
+    const expiresAt = dayjs().add(90, 'days').toDate()
+
+    await db.insert(sessions).values({
+      sessionToken,
+      userId,
+      expiresAt: expiresAt.toISOString(),
+    })
+
+    setCookie(c, env.SESSION_COOKIE_NAME, sessionToken)
+
+    return c.redirect('/')
+  })
   .post(
     '/verify-otp',
     zValidator(

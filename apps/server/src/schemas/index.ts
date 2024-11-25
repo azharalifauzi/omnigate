@@ -92,6 +92,9 @@ export const sessions = pgTable('sessions', {
     .references(() => users.id, { onDelete: 'cascade' })
     .notNull(),
   expiresAt: timestamp('expires_at', { mode: 'string' }).notNull(),
+  createdAt: timestamp('created_at', { mode: 'string' }).notNull().defaultNow(),
+  userAgent: text('user_agent'),
+  ipAddress: varchar('ip_address', { length: 255 }),
 })
 
 export const otpTokens = pgTable('otp_tokens', {
@@ -107,4 +110,14 @@ export const otpTokens = pgTable('otp_tokens', {
   }).notNull(),
   createdAt: timestamp('created_at', { mode: 'string' }).defaultNow().notNull(),
   otp: varchar('otp', { length: 6 }).notNull(),
+})
+
+export const authMethods = pgTable('auth_methods', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
+  provider: varchar('provider', { length: 50 }).notNull(),
+  providerId: varchar('provider_id', { length: 255 }).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
 })
