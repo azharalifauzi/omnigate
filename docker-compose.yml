@@ -1,11 +1,9 @@
-version: '3.8'
-
 services:
   server:
     container_name: omnigate-server
     build:
       context: .
-      dockerfile: ./docker/production/Dockerfile-server
+      dockerfile: ./docker/production/server.Dockerfile
     environment:
       - SESSION_COOKIE_NAME=${SESSION_COOKIE_NAME}
       - DEFAULT_ORG_ID=${DEFAULT_ORG_ID}
@@ -19,17 +17,16 @@ services:
       - SMTP_HOST=${SMTP_HOST}
       - SMTP_PORT=${SMTP_PORT}
       - EMAIL_SENDER=${EMAIL_SENDER}
-      - NODE_ENV=${NODE_ENV:-production}
-      - IS_DOCKER=${IS_DOCKER:-true}
+      - NODE_ENV=production
+      - IS_DOCKER=true
   web:
     container_name: omnigate-web
     build:
       context: .
-      dockerfile: ./docker/production/Dockerfile-web
+      dockerfile: ./docker/production/web.Dockerfile
     environment:
       - SESSION_COOKIE_NAME=${SESSION_COOKIE_NAME}
-      - IS_DOCKER=${IS_DOCKER:-true}
-
+      - IS_DOCKER=true
   nginx:
     image: nginx:alpine
     ports:

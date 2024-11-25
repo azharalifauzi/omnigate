@@ -5,16 +5,14 @@
   "license": "MIT",
   "scripts": {
     "build": "dotenvx run -- turbo build",
-    "dev": "dotenvx run -f .env -f .env.local -- turbo dev",
+    "dev": "dotenvx run -- turbo dev",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "ui": "pnpm --filter @repo/ui ui",
-    "create:migration": "turbo --filter @repo/server create:migration",
-    "migrate": "turbo migrate",
-    "migrate:dev": "turbo migrate:dev",
-    "seed": "turbo seed",
-    "seed:dev": "turbo seed:dev",
-    "test:unit": "turbo test:unit"
+    "create:migration": "dotenvx run -- turbo --filter @repo/server create:migration",
+    "migrate": "dotenvx run -- turbo migrate",
+    "seed": "dotenvx run -- turbo seed",
+    "test:unit": "dotenvx run -- turbo test:unit"
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "^1.24.0",

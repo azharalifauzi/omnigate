@@ -5,29 +5,22 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**"]
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
     "lint": {
       "dependsOn": ["^lint"]
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "inputs": [".env*"]
     },
     "create:migration": {
       "inputs": [".env*"],
       "cache": false,
       "persistent": true
     },
-    "migrate:dev": {
-      "inputs": [".env*"],
-      "cache": false
-    },
     "migrate": {
-      "inputs": [".env*"],
-      "cache": false
-    },
-    "seed:dev": {
       "inputs": [".env*"],
       "cache": false
     },
@@ -37,9 +30,23 @@
     },
     "test:unit": {
       "inputs": [".env*"],
-      "cache": false,
       "persistent": true
     }
   },
-  "globalEnv": ["SESSION_COOKIE_NAME"]
+  "globalEnv": [
+    "SESSION_COOKIE_NAME",
+    "DEFAULT_ORG_ID",
+    "DATABASE_URL",
+    "S3_BUCKET_NAME",
+    "S3_SPACES_ENDPOINT",
+    "S3_SPACES_SECRET_KEY",
+    "S3_SPACES_ACCESS_KEY_ID",
+    "SMTP_PASSWORD",
+    "SMTP_USERNAME",
+    "SMTP_HOST",
+    "SMTP_PORT",
+    "EMAIL_SENDER",
+    "EMAIL_CATCHER",
+    "BACKEND_URL"
+  ]
 }
