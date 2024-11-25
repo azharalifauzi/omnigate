@@ -21,7 +21,7 @@
     "migrate:dev": "tsx scripts/migrate.ts",
     "seed": "tsx scripts/seed.ts",
     "seed:dev": "tsx scripts/seed.ts",
-    "test:unit": "vitest run"
+    "test:unit": "tsx scripts/pretest.ts && vitest run"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",

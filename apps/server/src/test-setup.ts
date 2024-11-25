@@ -11,14 +11,7 @@ import {
   users,
   usersToOrganizations,
 } from './schemas'
-import { env } from './env'
 import { fileURLToPath } from 'url'
-
-if (!env.IS_DOCKER) {
-  console.warn(
-    "Warning: you running test outside docker, you can lose your db data if you're running outside docker",
-  )
-}
 
 await migrate(db, {
   migrationsFolder: fileURLToPath(new URL('../drizzle', import.meta.url)),
