@@ -15,6 +15,7 @@ catalog:
   '@hookform/resolvers': ^3.9.1
   dayjs: ^1.11.13
   hono: ^4.6.10
+  '@icons-pack/react-simple-icons': ^10.2.0
 
 catalogs:
   react18:

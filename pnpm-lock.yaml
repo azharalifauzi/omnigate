@@ -9,6 +9,9 @@ catalogs:
     '@hookform/resolvers':
       specifier: ^3.9.1
       version: 3.9.1
+    '@icons-pack/react-simple-icons':
+      specifier: ^10.2.0
+      version: 10.2.0
     '@types/eslint':
       specifier: ^8
       version: 8.56.2
@@ -184,6 +187,9 @@ importers:
       '@hookform/resolvers':
         specifier: 'catalog:'
         version: 3.9.1(react-hook-form@7.53.2(react@18.3.1))
+      '@icons-pack/react-simple-icons':
+        specifier: 'catalog:'
+        version: 10.2.0(react@18.3.1)
       '@repo/server':
         specifier: workspace:*
         version: link:../server
@@ -1348,6 +1354,11 @@ packages:
   '@humanwhocodes/object-schema@2.0.2':
     resolution: {integrity: sha512-6EwiSjwWYP7pTckG6I5eyFANjPhmPjUX9JRLUSfNPC7FX7zK9gyZAfUEaECL6ALTpGX5AjnBq3C9XmVWPitNpw==}
     deprecated: Use @eslint/object-schema instead
+
+  '@icons-pack/react-simple-icons@10.2.0':
+    resolution: {integrity: sha512-QDUxup8D3GdIIzwGpxQs6bjeFV5mJes25qqf4aqP/PaBYQNCar7AiyD8C14636TosCG0A/QqAUwm/Hviep4d4g==}
+    peerDependencies:
+      react: ^16.13 || ^17 || ^18 || ^19
 
   '@isaacs/cliui@8.0.2':
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
@@ -6290,6 +6301,10 @@ snapshots:
   '@humanwhocodes/module-importer@1.0.1': {}
 
   '@humanwhocodes/object-schema@2.0.2': {}
+
+  '@icons-pack/react-simple-icons@10.2.0(react@18.3.1)':
+    dependencies:
+      react: 18.3.1
 
   '@isaacs/cliui@8.0.2':
     dependencies:

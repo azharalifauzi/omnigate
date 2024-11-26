@@ -5,5 +5,7 @@
 - [ ] Write tests
 - [ ] Documentation
 - [x] Google sign in
-- [ ] Homepage
+- [x] Homepage
 - [ ] Feature Flags
+- [ ] Fix and improve ESlint setup
+- [ ] Add lint stage

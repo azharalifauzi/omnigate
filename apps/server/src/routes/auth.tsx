@@ -299,16 +299,13 @@ const app = new Hono()
     const sessionToken = getCookie(c, env.SESSION_COOKIE_NAME)
 
     if (!sessionToken) {
-      return c.json({
-        statusCode: 200,
-        message: 'OK',
-      })
+      return generateJsonResponse(c)
     }
 
     deleteCookie(c, env.SESSION_COOKIE_NAME)
     db.delete(sessions).where(eq(sessions.sessionToken, sessionToken))
 
-    return generateJsonResponse(c)
+    return c.redirect('/')
   })
   .post(
     '/impersonate',

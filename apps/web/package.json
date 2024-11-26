@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "catalog:",
+    "@icons-pack/react-simple-icons": "catalog:",
     "@repo/server": "workspace:*",
     "@repo/ui": "workspace:*",
     "@t3-oss/env-nextjs": "^0.11.1",
