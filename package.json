@@ -7,7 +7,7 @@
   "scripts": {
     "build": "dotenvx run -- turbo build",
     "dev": "dotenvx run -- turbo dev",
-    "lint": "turbo lint --",
+    "lint": "turbo lint",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,md,scss,css,html}\"",
     "ui": "pnpm --filter @repo/ui ui",
     "create:migration": "dotenvx run -- turbo --filter @repo/server create:migration",
@@ -38,7 +38,7 @@
       "prettier --write --parser json-stringify"
     ],
     "**/*.{ts,tsx}": [
-      "pnpm lint"
+      "pnpm lint --"
     ]
   }
 }
