@@ -3,21 +3,26 @@
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
+  "author": "Azhar Ali Fauzi",
   "scripts": {
     "build": "dotenvx run -- turbo build",
     "dev": "dotenvx run -- turbo dev",
     "lint": "turbo lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,md,scss,css,html}\"",
     "ui": "pnpm --filter @repo/ui ui",
     "create:migration": "dotenvx run -- turbo --filter @repo/server create:migration",
     "migrate": "dotenvx run -- turbo migrate",
     "seed": "dotenvx run -- turbo seed",
-    "test:unit": "dotenvx run -- turbo test:unit"
+    "test:unit": "dotenvx run -- turbo test:unit",
+    "prepare": "husky",
+    "pre-commit": "lint-staged"
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "^1.24.0",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.2.10",
     "prettier": "catalog:",
     "turbo": "2.1.1"
   },
@@ -28,5 +33,16 @@
   "volta": {
     "node": "20.17.0",
     "pnpm": "9.12.0"
+  },
+  "lint-staged": {
+    "**/*.{js,jsx,ts,tsx,md,scss,css,html}": [
+      "prettier --write"
+    ],
+    "**/*.json": [
+      "prettier --write --parser json-stringify"
+    ],
+    "**/*.{ts,tsx}": [
+      "pnpm lint"
+    ]
   }
 }

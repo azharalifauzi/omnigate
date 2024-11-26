@@ -1,13 +1,7 @@
 /** @type {import("eslint").Linter.Config} */
 module.exports = {
   root: true,
-  plugins: ['@typescript-eslint'],
-  extends: [
-    '@repo/eslint-config/library.js',
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-  ],
-  parser: '@typescript-eslint/parser',
+  extends: ['@repo/eslint-config/server.js'],
   rules: {
     'no-redeclare': 'off',
     'no-unused-vars': 'off',

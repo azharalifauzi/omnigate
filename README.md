@@ -7,5 +7,5 @@
 - [x] Google sign in
 - [x] Homepage
 - [ ] Feature Flags
-- [ ] Fix and improve ESlint setup
-- [ ] Add lint stage
+- [x] Fix and improve ESlint setup
+- [x] Add lint staged
