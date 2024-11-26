@@ -1,4 +1,4 @@
-import { somePermissions } from '~/utils'
+import { somePermissions } from '~/utils/auth'
 
 export const AUTH_ROUTE_CONFIG = {
   '/admin': {

@@ -1,4 +1,4 @@
-import { getServerSideUserObject } from '~/utils/auth'
+import { getServerSideUserObject } from '~/utils/server'
 import { Button } from '@repo/ui/components/ui/button'
 import Link from '~/components/link'
 import { SiGithub } from '@icons-pack/react-simple-icons'

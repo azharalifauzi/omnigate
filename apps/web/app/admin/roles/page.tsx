@@ -1,4 +1,4 @@
-import { getServerSideUserObject } from '~/utils/auth'
+import { getServerSideUserObject } from '~/utils/server'
 import RoleFeature from './client'
 import { AUTH_ROUTE_CONFIG } from '~/configs/auth'
 import { notFound } from 'next/navigation'

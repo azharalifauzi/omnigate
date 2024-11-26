@@ -1,6 +1,6 @@
 import React from 'react'
 import AdminLayout from './_components/admin-layout'
-import { getServerSideUserObject } from '~/utils/auth'
+import { getServerSideUserObject } from '~/utils/server'
 import { AUTH_ROUTE_CONFIG } from '~/configs/auth'
 import { notFound } from 'next/navigation'
 

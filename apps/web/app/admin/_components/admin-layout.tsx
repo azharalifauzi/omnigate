@@ -15,7 +15,7 @@ import {
 } from '@repo/ui/components/ui/popover'
 import { client } from '~/utils/fetcher'
 import AccountSettings from './account-settings'
-import { somePermissions } from '~/utils'
+import { somePermissions } from '~/utils/auth'
 
 const SIDEBAR_CONFIG = [
   {
