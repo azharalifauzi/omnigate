@@ -1,6 +1,17 @@
 # Omnigate: The Ultimate Next.js Boilerplate for Self-Hosting
 
-This boilerplate is your one-stop solution for building full-stack, production-ready applications with full control over your backend and frontend. Whether you're a solo developer or part of a team, this project ensures a top-notch Developer Experience (DX) and smooth deployment process.
+This boilerplate is your one-stop solution for building full-stack, production-ready applications with built-in authentication. Whether you're a solo developer or part of a team, this project ensures a top-notch Developer Experience (DX) and smooth deployment process. So you can focus on what matters like building and shipping features.
+
+#### 🔐 Built-In Authentication Without Third-Party Dependencies
+
+Say goodbye to expensive third-party services! This boilerplate comes with a robust, built-in authentication system that supports:
+
+- **Google Sign-In**
+- **OTP-based Passwordless Login**
+- **Role-Based Access Permissions**
+- **Organization Management**
+
+It's ready to use out of the box, easily extensible, and gives you complete control over your data and user management.
 
 ## 🚀 Features
 
@@ -29,7 +40,6 @@ This boilerplate is your one-stop solution for building full-stack, production-r
   - **OTP-based passwordless login**
 - **Role-Based Access Permissions**: Define and enforce permissions based on user roles seamlessly.
 - **Organization Support**: Manage multiple organizations with role-specific access within each organization.
-- Easily extendable for other methods like GitHub, Facebook, Apple, etc.
 
 ### 🚢 Deployment Made Easy
 
@@ -64,7 +74,7 @@ cp .env.example .env
 
 ### Setting up Database
 
-You need to create a database first and set the `DATABASE_URL` to `.env` file.
+You need to install PostgreSQL and create a database first. After that you have to set the `DATABASE_URL` inside `.env` file.
 
 ```bash
 # Migrate DB
@@ -141,13 +151,19 @@ You can also check multiple permissions with helper functions like `somePermissi
 ```ts
 import { somePermission, everyPermission } from '~/utils/auth'
 
-const { getPermission } = useUser()
+function Component() {
+  const { getPermission } = useUser()
 
-// Will return true if user has one of the permissions
-getPermission(somePermissions(['write:roles', 'read:roles']))
+  // Will return true if user has one of the permissions
+  const canReadOrWriteRole = getPermission(
+    somePermissions(['write:roles', 'read:roles']),
+  )
 
-// Will return true when user has all the permissions
-everyPermission(everyPermissions(['write:roles', 'read:roles']))
+  // Will return true when user has all the permissions
+  const canReadAndWriteRole = everyPermission(
+    everyPermissions(['write:roles', 'read:roles']),
+  )
+}
 ```
 
 ## 📦 Deployment
