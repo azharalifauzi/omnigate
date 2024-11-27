@@ -13,7 +13,7 @@ This boilerplate is your one-stop solution for building full-stack, production-r
 
 - **Frontend**:
   - [Next.js](https://nextjs.org/)
-  - [shadcn](https://shadcn.dev/)
+  - [shadcn](https://ui.shadcn.com/)
   - [Tailwind CSS](https://tailwindcss.com/)
   - [@tanstack/react-query](https://tanstack.com/query/v4)
 - **Backend**:
@@ -29,7 +29,7 @@ This boilerplate is your one-stop solution for building full-stack, production-r
   - **OTP-based passwordless login**
 - **Role-Based Access Permissions**: Define and enforce permissions based on user roles seamlessly.
 - **Organization Support**: Manage multiple organizations with role-specific access within each organization.
-- Easily extendable for other methods like GitHub, Facebook, or Apple.
+- Easily extendable for other methods like GitHub, Facebook, Apple, etc.
 
 ### 🚢 Deployment Made Easy
 
@@ -38,7 +38,7 @@ This boilerplate is your one-stop solution for building full-stack, production-r
 
 ### 🌟 Full Control
 
-- No need for paid third-party services for simple tasks like rate limiting, websockets, CRON, or authentication. This boilerplate gives you full control of your data and backend services.
+- No need for paid third-party services for simple tasks like rate limiting, websockets, cron jobs, or authentication. This boilerplate gives you full control of your data and backend services.
 
 ## 🛠️ Getting Started
 
@@ -52,8 +52,8 @@ This boilerplate is your one-stop solution for building full-stack, production-r
 
 ```bash
 # Clone this repo
-git clone https://github.com/your-repo-name/nextjs-boilerplate.git
-cd nextjs-boilerplate
+git clone https://github.com/azharalifauzi/omnigate
+cd omnigate
 
 # Instal packages
 pnpm install
@@ -74,7 +74,7 @@ pnpm migrate
 pnpm seed
 ```
 
-Once you seed the DB, you'll get `DEFAULT_ORG_ID` in the console. Copy the value from console to `DEFAULT_ORG_ID` in `.env`.
+Once you seed the DB, you'll see `DEFAULT_ORG_ID` in the terminal. Copy the value from terminal to `DEFAULT_ORG_ID` in `.env`.
 
 ### Development
 
