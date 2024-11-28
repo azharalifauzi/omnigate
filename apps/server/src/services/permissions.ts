@@ -48,3 +48,38 @@ export function everyPermissions(permissions: string[]) {
     })
   }
 }
+
+export const DEFAULT_PERMISSIONS = [
+  {
+    name: 'write:users',
+    key: 'write:users',
+  },
+  {
+    name: 'read:users',
+    key: 'read:users',
+  },
+  {
+    name: 'write:organizations',
+    key: 'write:organizations',
+  },
+  {
+    name: 'read:organizations',
+    key: 'read:organizations',
+  },
+  {
+    name: 'write:roles',
+    key: 'write:roles',
+  },
+  {
+    name: 'read:roles',
+    key: 'read:roles',
+  },
+  {
+    name: 'write:permissions',
+    key: 'write:permissions',
+  },
+  {
+    name: 'read:permissions',
+    key: 'read:permissions',
+  },
+]

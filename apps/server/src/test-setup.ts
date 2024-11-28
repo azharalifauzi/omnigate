@@ -1,5 +1,4 @@
 import { migrate } from 'drizzle-orm/node-postgres/migrator'
-import { afterAll, beforeAll } from 'vitest'
 import { db } from './lib/db'
 import {
   authMethods,
@@ -14,6 +13,10 @@ import {
   usersToOrganizations,
 } from './schemas'
 import { fileURLToPath } from 'url'
+import type { GlobalSetupContext } from 'vitest/node'
+import { DEFAULT_PERMISSIONS } from './services/permissions'
+import { createUserWithRole } from './utils/test-utils'
+import { env } from './env'
 
 async function cleanUpDatabase() {
   await db.delete(users)
@@ -28,7 +31,7 @@ async function cleanUpDatabase() {
   await db.delete(authMethods)
 }
 
-beforeAll(async () => {
+export default async function setup({ provide }: GlobalSetupContext) {
   await migrate(db, {
     migrationsFolder: fileURLToPath(new URL('../drizzle', import.meta.url)),
   })
@@ -46,56 +49,40 @@ beforeAll(async () => {
       key: 'admin',
       name: 'Admin',
     })
+    .onConflictDoNothing()
     .returning()
 
   const roleId = role[0]!.id
 
   const permissions = await db
     .insert(permissionTable)
-    .values([
-      {
-        name: 'write:users',
-        key: 'write:users',
-      },
-      {
-        name: 'read:users',
-        key: 'read:users',
-      },
-      {
-        name: 'write:organizations',
-        key: 'write:organizations',
-      },
-      {
-        name: 'read:organizations',
-        key: 'read:organizations',
-      },
-      {
-        name: 'write:roles',
-        key: 'write:roles',
-      },
-      {
-        name: 'read:roles',
-        key: 'read:roles',
-      },
-      {
-        name: 'write:permissions',
-        key: 'write:permissions',
-      },
-      {
-        name: 'read:permissions',
-        key: 'read:permissions',
-      },
-    ])
+    .values(DEFAULT_PERMISSIONS)
+    .onConflictDoNothing()
     .returning()
 
-  await db.insert(permissionsToRoles).values(
-    permissions.map(({ id }) => ({
-      roleId,
-      permissionId: id,
-    })),
-  )
-})
+  await db
+    .insert(permissionsToRoles)
+    .values(
+      permissions.map(({ id }) => ({
+        roleId,
+        permissionId: id,
+      })),
+    )
+    .onConflictDoNothing()
 
-afterAll(async () => {
-  await cleanUpDatabase()
-})
+  const token = await createUserWithRole(
+    'Admin',
+    'admin@sidrstudio.com',
+    'admin',
+  )
+  const headers: Record<string, string> = {}
+  headers['Cookie'] = `${env.SESSION_COOKIE_NAME}=${token}`
+
+  provide('adminUserHeaders', headers)
+}
+
+declare module 'vitest' {
+  export interface ProvidedContext {
+    adminUserHeaders: Record<string, string>
+  }
+}

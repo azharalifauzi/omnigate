@@ -5,6 +5,7 @@ import * as schema from '~/schemas'
 import pg from 'pg'
 import { eq } from 'drizzle-orm'
 import { isEmail } from '~/utils'
+import { DEFAULT_PERMISSIONS } from '~/services/permissions'
 
 export const client = new pg.Client(process.env.DATABASE_URL)
 console.log('Connect to DB')
@@ -98,94 +99,18 @@ await db
   })
   .onConflictDoNothing()
 
-const readUser = await db
+const permissions = await db
   .insert(schema.permissions)
-  .values({
-    name: 'Read users',
-    key: 'read:users',
-  })
-  .onConflictDoNothing()
-  .returning()
-const writedUser = await db
-  .insert(schema.permissions)
-  .values({
-    name: 'Write users',
-    key: 'write:users',
-  })
-  .onConflictDoNothing()
-  .returning()
-const readRoles = await db
-  .insert(schema.permissions)
-  .values({
-    name: 'Read roles',
-    key: 'read:roles',
-  })
-  .onConflictDoNothing()
-  .returning()
-const writeRoles = await db
-  .insert(schema.permissions)
-  .values({
-    name: 'Write roles',
-    key: 'write:roles',
-  })
-  .onConflictDoNothing()
-  .returning()
-const readPermissions = await db
-  .insert(schema.permissions)
-  .values({
-    name: 'Read permissions',
-    key: 'read:permissions',
-  })
-  .onConflictDoNothing()
-  .returning()
-const writePermissions = await db
-  .insert(schema.permissions)
-  .values({
-    name: 'Write permissions',
-    key: 'write:permissions',
-  })
-  .onConflictDoNothing()
-  .returning()
-const readOrgs = await db
-  .insert(schema.permissions)
-  .values({
-    name: 'Read organizations',
-    key: 'read:organizations',
-  })
-  .onConflictDoNothing()
-  .returning()
-const writeOrgs = await db
-  .insert(schema.permissions)
-  .values({
-    name: 'Write organizations',
-    key: 'write:organizations',
-  })
+  .values(DEFAULT_PERMISSIONS)
   .onConflictDoNothing()
   .returning()
 
-const permissions = {
-  readUser,
-  writedUser,
-  readRoles,
-  writeRoles,
-  readPermissions,
-  writePermissions,
-  readOrgs,
-  writeOrgs,
-}
-
-const promises = Object.values(permissions).map(async (p) => {
-  const data = p[0]
-
-  if (!data) {
-    return
-  }
-
+const promises = permissions.map(async (permission) => {
   await db
     .insert(schema.permissionsToRoles)
     .values({
       roleId: superAdminRole[0]!.id,
-      permissionId: data.id,
+      permissionId: permission.id,
     })
     .onConflictDoNothing()
 })

@@ -79,6 +79,14 @@ const app = new Hono()
       where: (role, { eq }) => eq(role.id, Number(id)),
     })
 
+    if (!role) {
+      throw new ServerError({
+        statusCode: 404,
+        message: 'Failed to get role',
+        description: "Role you're looking for is not found",
+      })
+    }
+
     return generateJsonResponse(c, role)
   })
   .post(

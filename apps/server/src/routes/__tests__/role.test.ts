@@ -1,23 +1,11 @@
-import { describe, test, expect, beforeEach, vi, beforeAll } from 'vitest'
-import app from '~/app'
+import { eq, not } from 'drizzle-orm'
 import { testClient } from 'hono/testing'
+import { beforeEach, describe, expect, inject, test, vi } from 'vitest'
+import app from '~/app'
 import { db } from '~/lib/db'
 import { roles } from '~/schemas'
-import { createUserWithRole } from '~/utils/test-utils'
-import { env } from '~/env'
-import { eq, not } from 'drizzle-orm'
 
-const headers: Record<string, string> = {}
-
-beforeAll(async () => {
-  const token = await createUserWithRole(
-    'Admin',
-    'admin@sidrstudio.com',
-    'admin',
-  )
-
-  headers['Cookie'] = `${env.SESSION_COOKIE_NAME}=${token}`
-})
+const headers = inject('adminUserHeaders')
 
 // Mock database operations
 beforeEach(async () => {
@@ -110,8 +98,6 @@ describe('Role Controller API - Positive Test Cases', () => {
     )
 
     const { data } = await response.json()
-
-    console.log(data)
 
     const role = await db.query.roles.findFirst({
       where: eq(roles.id, data.id),
@@ -212,7 +198,7 @@ describe('Role Controller API - Negative Test Cases', () => {
     const response = await client.api.v1.role[':id'].$get(
       {
         param: {
-          id: '123',
+          id: '-1',
         },
       },
       { headers },

@@ -55,6 +55,14 @@ const app = new Hono()
         where: (permission, { eq }) => eq(permission.id, Number(id)),
       })
 
+      if (!permission) {
+        throw new ServerError({
+          statusCode: 404,
+          message: 'Failed to get permission',
+          description: "Permission you're looking for is not found",
+        })
+      }
+
       return generateJsonResponse(c, permission)
     },
   )
@@ -77,7 +85,7 @@ const app = new Hono()
       try {
         const permission = await db.insert(permissions).values(data).returning()
 
-        return generateJsonResponse(c, permission, 201)
+        return generateJsonResponse(c, permission[0], 201)
       } catch (err) {
         const error = err as any
         if (error.constraint === 'permissions_key_unique') {
