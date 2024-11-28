@@ -26,7 +26,7 @@ const VerifyOtpForm = () => {
       })
 
       await unwrapResponse(res)
-      window.open('/admin', '_self')
+      window.open('/', '_self')
     },
   })
 
