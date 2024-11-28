@@ -23,8 +23,9 @@ beforeAll(async () => {
 beforeEach(async () => {
   vi.clearAllMocks()
   await db.delete(roles).where(not(eq(roles.key, 'admin')))
-  // Setup any necessary mock or reset state
 })
+
+const client = testClient(app)
 
 // Positive test cases
 describe('Role Controller API - Positive Test Cases', () => {
@@ -37,7 +38,7 @@ describe('Role Controller API - Positive Test Cases', () => {
       },
     ])
 
-    const response = await testClient(app).api.v1.role.$get(
+    const response = await client.api.v1.role.$get(
       {
         query: {
           page: '1',
@@ -61,24 +62,212 @@ describe('Role Controller API - Positive Test Cases', () => {
     expect(data.data.length).toEqual(3)
   })
 
-  test('it should return role details for a valid role ID', async () => {})
+  test('it should return role details for a valid role ID', async () => {
+    const response = await client.api.v1.role.$post(
+      {
+        json: {
+          key: 'test',
+          name: 'test',
+          description: 'role description',
+        },
+      },
+      {
+        headers,
+      },
+    )
 
-  test('it should create a new role', async () => {})
+    const { data: role } = await response.json()
 
-  test('it should update an existing role', async () => {})
+    const getIdResponse = await client.api.v1.role[':id'].$get(
+      {
+        param: {
+          id: role.id.toString(),
+        },
+      },
+      {
+        headers,
+      },
+    )
 
-  test('it should delete a role', async () => {})
+    const { data } = await getIdResponse.json()
+
+    expect(data.name).toEqual('test')
+    expect(data.key).toEqual('test')
+    expect(data.description).toEqual('role description')
+  })
+
+  test('it should create a new role', async () => {
+    const response = await client.api.v1.role.$post(
+      {
+        json: {
+          key: 'financial-approver',
+          name: 'financial-approver',
+        },
+      },
+      {
+        headers,
+      },
+    )
+
+    const { data } = await response.json()
+
+    console.log(data)
+
+    const role = await db.query.roles.findFirst({
+      where: eq(roles.id, data.id),
+    })
+
+    expect(role?.key).toEqual('financial-approver')
+    expect(role?.name).toEqual('financial-approver')
+  })
+
+  test('it should update an existing role', async () => {
+    const response = await client.api.v1.role.$post(
+      {
+        json: {
+          key: 'financial-approver',
+          name: 'financial-approver',
+        },
+      },
+      {
+        headers,
+      },
+    )
+
+    const { data } = await response.json()
+
+    const roleBeforeEdit = await db.query.roles.findFirst({
+      where: eq(roles.id, data.id),
+    })
+
+    expect(roleBeforeEdit?.key).toEqual('financial-approver')
+    expect(roleBeforeEdit?.name).toEqual('financial-approver')
+
+    await client.api.v1.role[':id'].$put(
+      {
+        param: {
+          id: data.id.toString(),
+        },
+        json: {
+          key: 'financial-approver-edit',
+          name: 'financial-approver-edit',
+        },
+      },
+      {
+        headers,
+      },
+    )
+
+    const role = await db.query.roles.findFirst({
+      where: eq(roles.id, data.id),
+    })
+
+    expect(role?.key).toEqual('financial-approver-edit')
+    expect(role?.name).toEqual('financial-approver-edit')
+  })
+
+  test('it should delete a role', async () => {
+    const response = await client.api.v1.role.$post(
+      {
+        json: {
+          key: 'financial-approver',
+          name: 'financial-approver',
+        },
+      },
+      {
+        headers,
+      },
+    )
+
+    const { data } = await response.json()
+
+    const role = await db.query.roles.findFirst({
+      where: eq(roles.id, data.id),
+    })
+
+    expect(role).not.toBeUndefined()
+
+    await client.api.v1.role[':id'].$delete(
+      {
+        param: {
+          id: data.id.toString(),
+        },
+      },
+      {
+        headers,
+      },
+    )
+
+    const roleAfterDelete = await db.query.roles.findFirst({
+      where: eq(roles.id, data.id),
+    })
+
+    expect(roleAfterDelete).toBeUndefined()
+  })
 })
 
 // Negative test cases
 describe('Role Controller API - Negative Test Cases', () => {
-  test('it should return 404 for a non-existent role', async () => {})
+  test('it should return 404 for a non-existent role', async () => {
+    const response = await client.api.v1.role[':id'].$get(
+      {
+        param: {
+          id: '123',
+        },
+      },
+      { headers },
+    )
 
-  test('it should return 400 for invalid payload on role creation', async () => {})
+    expect(response.status).toEqual(404)
+  })
 
-  test('it should return 403 for unauthorized access', async () => {})
+  test('it should return 400 for invalid payload on role creation', async () => {
+    const res = await app.request('/api/v1/role', {
+      method: 'POST',
+      body: JSON.stringify({
+        foo: 'bar',
+      }),
+      headers,
+    })
 
-  test('it should return 400 for duplicate key on role creation', async () => {})
+    expect(res.status).toEqual(400)
+  })
 
-  test('it should return 400 for invalid permission IDs during assignment', async () => {})
+  test('it should return 401 for unauthorized access', async () => {
+    const response = await client.api.v1.role[':id'].$get({
+      param: {
+        id: '123',
+      },
+    })
+
+    expect(response.status).toEqual(401)
+  })
+
+  test('it should return 400 for duplicate key on role creation', async () => {
+    await client.api.v1.role.$post(
+      {
+        json: {
+          key: 'financial-approver',
+          name: 'financial-approver',
+        },
+      },
+      {
+        headers,
+      },
+    )
+
+    const response = await client.api.v1.role.$post(
+      {
+        json: {
+          key: 'financial-approver',
+          name: 'financial-approver',
+        },
+      },
+      {
+        headers,
+      },
+    )
+
+    expect(response.status).toEqual(400)
+  })
 })

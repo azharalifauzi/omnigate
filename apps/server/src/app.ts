@@ -19,7 +19,9 @@ const app = new Hono()
 // NOTE: Compress doesn't work with Bun for now
 app.use(compress())
 app.use(logger())
-app.use(csrf())
+if (isProduction) {
+  app.use(csrf())
+}
 app.use('*', secureHeaders())
 app.use('*', rateLimiter())
 
