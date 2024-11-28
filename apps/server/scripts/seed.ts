@@ -4,6 +4,7 @@ import { drizzle } from 'drizzle-orm/node-postgres'
 import * as schema from '~/schemas'
 import pg from 'pg'
 import { eq } from 'drizzle-orm'
+import { isEmail } from '~/utils'
 
 export const client = new pg.Client(process.env.DATABASE_URL)
 console.log('Connect to DB')
@@ -22,6 +23,12 @@ if (!initialUserEmail) {
 
 if (!initialUserName) {
   throw new Error('Please add INITIAL_USER_NAME on .env file')
+}
+
+if (!isEmail(initialUserEmail)) {
+  throw new Error(
+    'Looks like INITIAL_USER_EMAIL format is invalid, it should be an email',
+  )
 }
 
 let defaultOrg = await db
