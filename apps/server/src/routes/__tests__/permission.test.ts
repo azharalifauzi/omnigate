@@ -49,7 +49,7 @@ describe('Permission Controller API - Positive Test Cases', () => {
     expect(data.data.length).toEqual(DEFAULT_PERMISSIONS.length)
   })
 
-  test('it should return permission details for a valid role ID', async () => {
+  test('it should return permission details for a valid permission ID', async () => {
     const response = await client.api.v1.permission.$post(
       {
         json: {

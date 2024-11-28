@@ -319,6 +319,14 @@ const app = new Hono()
     async (c) => {
       const id = Number(c.req.param('id'))
 
+      if (id === c.get('userId')) {
+        throw new ServerError({
+          statusCode: 400,
+          message: 'Failed when trying to suspend user',
+          description: "You can't suspend yourself",
+        })
+      }
+
       const user = await updateUserById(id, {
         suspendedAt: new Date().toISOString(),
       })

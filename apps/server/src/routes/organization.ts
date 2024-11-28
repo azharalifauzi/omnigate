@@ -6,6 +6,7 @@ import { count, desc, eq, getTableColumns } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { z } from 'zod'
 import { generateJsonResponse } from '../lib/response'
+import { ServerError } from '~/lib/error'
 
 const app = new Hono()
   .get(
@@ -62,6 +63,14 @@ const app = new Hono()
       const organization = await db.query.organizations.findFirst({
         where: (org, { eq }) => eq(org.id, Number(id)),
       })
+
+      if (!organization) {
+        throw new ServerError({
+          statusCode: 404,
+          message: 'Failed to get organization',
+          description: "Organization you're looking for is not found",
+        })
+      }
 
       return generateJsonResponse(c, organization)
     },
@@ -126,9 +135,12 @@ const app = new Hono()
     }),
     async (c) => {
       const data = c.req.valid('json')
-      const permission = await db.insert(organizations).values(data).returning()
+      const organization = await db
+        .insert(organizations)
+        .values(data)
+        .returning()
 
-      return generateJsonResponse(c, permission, 201)
+      return generateJsonResponse(c, organization[0], 201)
     },
   )
   .put(
