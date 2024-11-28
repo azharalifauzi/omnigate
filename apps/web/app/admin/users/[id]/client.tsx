@@ -154,6 +154,12 @@ const UserProfile = () => {
       queryClient.invalidateQueries({
         queryKey: [QueryKey.UserProfile, id],
       })
+      queryClient.invalidateQueries({
+        queryKey: [QueryKey.Users],
+      })
+      queryClient.invalidateQueries({
+        queryKey: [QueryKey.OrganizationUserList],
+      })
     },
   })
 

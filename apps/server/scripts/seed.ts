@@ -13,6 +13,17 @@ console.log('Start seeding')
 
 let isDbSeeded = true
 
+const initialUserEmail = process.env.INITIAL_USER_EMAIL
+const initialUserName = process.env.INITIAL_USER_NAME
+
+if (!initialUserEmail) {
+  throw new Error('Please add INITIAL_USER_EMAIL on .env file')
+}
+
+if (!initialUserName) {
+  throw new Error('Please add INITIAL_USER_NAME on .env file')
+}
+
 let defaultOrg = await db
   .select()
   .from(schema.organizations)
@@ -34,8 +45,8 @@ console.log(`Default Organization ID: ${defaultOrg[0]!.id}`)
 let superAdmin = await db
   .insert(schema.users)
   .values({
-    email: 'admin@acme.com',
-    name: 'Admin',
+    email: initialUserEmail,
+    name: initialUserName,
     isEmailVerified: true,
   })
   .onConflictDoNothing()
@@ -45,7 +56,7 @@ if (isDbSeeded) {
   superAdmin = await db
     .select()
     .from(schema.users)
-    .where(eq(schema.users.email, 'admin@acme.com'))
+    .where(eq(schema.users.email, initialUserEmail))
 }
 let superAdminRole = await db
   .insert(schema.roles)

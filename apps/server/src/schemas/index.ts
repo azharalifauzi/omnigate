@@ -116,7 +116,9 @@ export const authMethods = pgTable('auth_methods', {
   id: serial('id').primaryKey(),
   userId: integer('user_id')
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id, {
+      onDelete: 'cascade',
+    }),
   provider: varchar('provider', { length: 50 }).notNull(),
   providerId: varchar('provider_id', { length: 255 }).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),

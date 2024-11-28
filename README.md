@@ -10,8 +10,11 @@ Say goodbye to expensive third-party services! This boilerplate comes with a rob
 - **OTP-based Passwordless Login**
 - **Role-Based Access Permissions**
 - **Organization Management**
+- **UI Dashboard for Managing Users**
 
 It's ready to use out of the box, easily extensible, and gives you complete control over your data and user management.
+
+https://github.com/user-attachments/assets/b68220d7-2a95-45f0-bf5d-ddc95513ffb2
 
 ## 🚀 Features
 
@@ -40,6 +43,7 @@ It's ready to use out of the box, easily extensible, and gives you complete cont
   - **OTP-based passwordless login**
 - **Role-Based Access Permissions**: Define and enforce permissions based on user roles seamlessly.
 - **Organization Support**: Manage multiple organizations with role-specific access within each organization.
+- **Built-in Dashboard UI**: Manage authentication related stuff using well crafted UI under `/admin` path.
 
 ### 🚢 Deployment Made Easy
 
@@ -56,7 +60,7 @@ It's ready to use out of the box, easily extensible, and gives you complete cont
 
 - [Node.js](https://nodejs.org/) (v20+)
 - [pnpm](https://pnpm.io/)
-- [PostgreSQL Database](https://www.postgresql.org/)
+- [PostgreSQL](https://www.postgresql.org/)
 
 ### Installation
 
@@ -68,13 +72,15 @@ cd omnigate
 # Instal packages
 pnpm install
 
-# Copy environment and fill it
+# Copy environment and set values for all of them
 cp .env.example .env
 ```
 
 ### Setting up Database
 
 You need to install PostgreSQL and create a database first. After that you have to set the `DATABASE_URL` inside `.env` file.
+
+**Important**: before run `pnpm seed` you have to set values for `INITIAL_USER_EMAIL` and `INITIAL_USER_NAME` inside `.env` file.
 
 ```bash
 # Migrate DB
@@ -98,6 +104,14 @@ Frontend and backend start together with full type safety and no CORS issues.
 
 ```bash
 pnpm build
+```
+
+### Testing
+
+**Important**: Before run the test, you need to create another database specific for testing purpose, so your database that is used for development won't losing the data.
+
+```bash
+pnpm test:unit
 ```
 
 ## 🔨 Useful Utility and Hooks
@@ -174,10 +188,6 @@ Deploy easily using Docker:
 # App wil run on port 3000
 docker-compose up --build
 ```
-
-## 🤝 Contributing
-
-Contributions are welcome! Please open an issue or submit a pull request.
 
 ## 📜 License
 
