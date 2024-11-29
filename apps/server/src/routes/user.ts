@@ -2,7 +2,6 @@ import { zValidator } from '@hono/zod-validator'
 import { and, count, desc, eq, getTableColumns, ilike } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { z } from 'zod'
-import { env } from '~/env'
 import { db } from '~/lib/db'
 import { authMiddleware } from '~/middlewares/auth'
 import {

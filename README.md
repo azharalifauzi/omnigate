@@ -90,8 +90,6 @@ pnpm migrate
 pnpm seed
 ```
 
-Once you seed the DB, you'll see `DEFAULT_ORG_ID` in the terminal. Copy the value from terminal to `DEFAULT_ORG_ID` in `.env`.
-
 ### Development
 
 ```bash
