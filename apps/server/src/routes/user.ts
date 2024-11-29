@@ -53,9 +53,21 @@ const app = new Hono()
         page = 1,
         size = 10,
         search,
-        organizationId = env.DEFAULT_ORG_ID,
+        organizationId,
       } = c.req.valid('query')
       const skip = (page - 1) * size
+
+      const defaultOrg = await db.query.organizations.findFirst({
+        where: eq(organizations.isDefault, true),
+      })
+
+      if (!defaultOrg) {
+        throw new ServerError({
+          statusCode: 500,
+          message: 'Internal Server Error',
+          description: 'Default organization is not found',
+        })
+      }
 
       const totalCount = await db
         .select({
@@ -84,7 +96,10 @@ const app = new Hono()
               : search
                 ? ilike(users.name, `%${search}%`)
                 : undefined,
-            eq(usersToOrganizations.organizationId, organizationId),
+            eq(
+              usersToOrganizations.organizationId,
+              organizationId ?? defaultOrg.id,
+            ),
           ),
         )
         .limit(size)
@@ -264,8 +279,20 @@ const app = new Hono()
       const data = c.req.valid('json')
       const user = await db.insert(users).values(data).returning()
 
+      const defaultOrg = await db.query.organizations.findFirst({
+        where: eq(organizations.isDefault, true),
+      })
+
+      if (!defaultOrg) {
+        throw new ServerError({
+          statusCode: 500,
+          message: 'Internal Server Error',
+          description: 'Default organization is not found',
+        })
+      }
+
       await db.insert(usersToOrganizations).values({
-        organizationId: env.DEFAULT_ORG_ID,
+        organizationId: defaultOrg.id,
         userId: user[0]!.id,
       })
 

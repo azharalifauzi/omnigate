@@ -60,5 +60,5 @@ export const createUserWithRole = async (
     expiresAt: dayjs().add(7, 'days').toISOString(),
   })
 
-  return sessionToken
+  return { ...user[0]!, sessionToken }
 }

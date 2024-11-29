@@ -9,7 +9,6 @@ export const env = createEnv({
   },
   server: {
     DATABASE_URL: z.string(),
-    DEFAULT_ORG_ID: z.number({ coerce: true }).default(1),
     SESSION_COOKIE_NAME: z.string().default('session'),
     PORT: z.number({ coerce: true }).default(4000),
     SMTP_PASSWORD: z.string(),
@@ -32,7 +31,6 @@ export const env = createEnv({
   },
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
-    DEFAULT_ORG_ID: process.env.DEFAULT_ORG_ID,
     SESSION_COOKIE_NAME: process.env.SESSION_COOKIE_NAME,
     PORT: process.env.PORT,
     SMTP_PASSWORD: process.env.SMTP_PASSWORD,

@@ -171,7 +171,7 @@ describe('Role Controller API - Positive Test Cases', () => {
       where: eq(roles.id, data.id),
     })
 
-    expect(role).not.toBeUndefined()
+    expect(role).toBeDefined()
 
     await client.api.v1.role[':id'].$delete(
       {

@@ -70,13 +70,13 @@ export default async function setup({ provide }: GlobalSetupContext) {
     )
     .onConflictDoNothing()
 
-  const token = await createUserWithRole(
+  const { sessionToken } = await createUserWithRole(
     'Admin',
     'admin@sidrstudio.com',
     'admin',
   )
   const headers: Record<string, string> = {}
-  headers['Cookie'] = `${env.SESSION_COOKIE_NAME}=${token}`
+  headers['Cookie'] = `${env.SESSION_COOKIE_NAME}=${sessionToken}`
 
   provide('adminUserHeaders', headers)
 }

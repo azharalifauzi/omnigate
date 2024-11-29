@@ -170,7 +170,7 @@ describe('Permission Controller API - Positive Test Cases', () => {
       where: eq(permissions.id, data.id),
     })
 
-    expect(permission).not.toBeUndefined()
+    expect(permission).toBeDefined()
 
     await client.api.v1.permission[':id'].$delete(
       {

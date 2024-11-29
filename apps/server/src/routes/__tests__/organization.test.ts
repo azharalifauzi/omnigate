@@ -151,7 +151,7 @@ describe('organization Controller API - Positive Test Cases', () => {
       where: eq(organizations.id, data.id),
     })
 
-    expect(organization).not.toBeUndefined()
+    expect(organization).toBeDefined()
 
     await client.api.v1.organization[':id'].$delete(
       {

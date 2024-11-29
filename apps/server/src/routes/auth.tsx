@@ -20,6 +20,7 @@ import {
   usersToOrganizations,
   otpTokens,
   authMethods,
+  organizations,
 } from '~/schemas'
 import { createSessionToken } from '~/utils/session'
 import { v4 as uuidv4 } from 'uuid'
@@ -48,8 +49,20 @@ const app = new Hono()
           .returning()
       )[0]!
 
+      const defaultOrg = await db.query.organizations.findFirst({
+        where: eq(organizations.isDefault, true),
+      })
+
+      if (!defaultOrg) {
+        throw new ServerError({
+          statusCode: 500,
+          message: 'Internal Server Error',
+          description: 'Default organization is not found',
+        })
+      }
+
       await db.insert(usersToOrganizations).values({
-        organizationId: env.DEFAULT_ORG_ID,
+        organizationId: defaultOrg.id,
         userId: user.id,
       })
 
@@ -63,7 +76,7 @@ const app = new Hono()
           assignedRoles.map((role) => ({
             roleId: role.id,
             userId: user.id,
-            organizationId: env.DEFAULT_ORG_ID,
+            organizationId: defaultOrg.id,
           })),
         )
       }
@@ -196,6 +209,18 @@ const app = new Hono()
       where: eq(authMethods.providerId, userInfo.id),
     })
 
+    const defaultOrg = await db.query.organizations.findFirst({
+      where: eq(organizations.isDefault, true),
+    })
+
+    if (!defaultOrg) {
+      throw new ServerError({
+        statusCode: 500,
+        message: 'Internal Server Error',
+        description: 'Default organization is not found',
+      })
+    }
+
     if (!existingAuthMethods) {
       const newUser = await db
         .insert(users)
@@ -203,6 +228,7 @@ const app = new Hono()
           email: userInfo.email,
           name: userInfo.name,
           image: userInfo.picture,
+          isEmailVerified: true,
         })
         .returning()
 
@@ -213,7 +239,7 @@ const app = new Hono()
       })
 
       await db.insert(usersToOrganizations).values({
-        organizationId: env.DEFAULT_ORG_ID,
+        organizationId: defaultOrg.id,
         userId: newUser[0]!.id,
       })
 
@@ -227,7 +253,7 @@ const app = new Hono()
           assignedRoles.map((role) => ({
             roleId: role.id,
             userId: newUser[0]!.id,
-            organizationId: env.DEFAULT_ORG_ID,
+            organizationId: defaultOrg.id,
           })),
         )
       }
