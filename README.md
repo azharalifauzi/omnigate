@@ -178,6 +178,75 @@ function Component() {
 }
 ```
 
+### Data Fetching Utils
+
+#### **Hono client RPC**
+
+In order to get type safety when fetching data you can use `client` and `unwrapResponse` fetcher utility.
+
+```ts
+'use client'
+import { useQuery } from '@tanstack/react-query'
+import { client, unwrapResponse, QueryKey } from '~/utils/fetcher'
+
+function Component() {
+  const { data } = useQuery({
+    queryKey: [QueryKey.Organization],
+    queryFn: async () => {
+      const res = client.api.v1.organization.$get({
+        query: {
+          page: '1',
+        },
+      })
+
+      const { data } = await unwrapResponse(res)
+
+      return data
+    },
+  })
+}
+```
+
+#### **Server Utility**
+
+- `generateJsonResponse` , this function will structurize the API response and still give the type safety.
+
+```ts
+import { generateJsonReponse } from '~/lib/response'
+
+new Hono().get('/user', (c) => {
+  // It will return  this
+  // {
+  //   statusCode: 200,
+  //   message: 'OK',
+  //   data: {
+  //     id: 1,
+  //     name: 'John'
+  //   }
+  // }
+  return generateJsonReponse(c, {
+    id: 1,
+    name: 'John',
+  })
+})
+```
+
+- `ServerError` , this class is extended from `Error` class that will help handling error.
+
+```ts
+import { ServerError } from '~/lib/error'
+
+new Hono().get('/user', () => {
+  throw new ServerError({
+    statusCode: 404,
+    message: 'Failed to get user',
+    description: 'User is not found',
+  })
+})
+```
+
+> Note: If `ServerError` is used together with `unwrapResponse` and `useQuery` or `useMutation` from Tanstack Query, it will automatically trigger a toast from `sonner` to give error information to user.
+
 ## 📦 Deployment
 
 Deploy easily using Docker:
@@ -193,7 +262,7 @@ This project is licensed under the MIT License.
 
 ## 📃 TODO:
 
-- [ ] Write tests
+- [x] Write tests
 - [x] Documentation
 - [x] Google sign in
 - [x] Homepage
