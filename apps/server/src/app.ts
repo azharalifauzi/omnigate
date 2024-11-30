@@ -6,6 +6,7 @@ import permission from './routes/permission'
 import organization from './routes/organization'
 import file from './routes/file'
 import auth from './routes/auth'
+import featureFlag from './routes/feature-flag'
 import { logger } from './middlewares/logger'
 import { ServerError } from './lib/error'
 import { secureHeaders } from 'hono/secure-headers'
@@ -33,6 +34,7 @@ const apiRoutes = app
   .route('/organization', organization)
   .route('/file', file)
   .route('/auth', auth)
+  .route('/feature-flag', featureFlag)
 
 app.get('/api/v1/healthcheck', (c) => c.json({ message: 'OK' }))
 

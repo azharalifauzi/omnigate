@@ -82,4 +82,12 @@ export const DEFAULT_PERMISSIONS = [
     name: 'read:permissions',
     key: 'read:permissions',
   },
+  {
+    name: 'read:feature-flags',
+    key: 'read:feature-flags',
+  },
+  {
+    name: 'read:feature-flags',
+    key: 'read:feature-flags',
+  },
 ]

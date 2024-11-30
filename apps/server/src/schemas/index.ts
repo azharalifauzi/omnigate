@@ -121,5 +121,34 @@ export const authMethods = pgTable('auth_methods', {
     }),
   provider: varchar('provider', { length: 50 }).notNull(),
   providerId: varchar('provider_id', { length: 255 }).notNull(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
+  createdAt: timestamp('created_at', { mode: 'string' }).defaultNow().notNull(),
 })
+
+export const featureFlags = pgTable('feature_flags', {
+  id: serial('id').primaryKey(),
+  name: varchar('name', { length: 255 }).notNull(),
+  description: text('description'),
+  key: varchar('key', { length: 255 }).notNull().unique(),
+  defaultValue: boolean().default(false).notNull(),
+  allowOverride: varchar('allow_override', { enum: ['user', 'organization'] }),
+  createdAt: timestamp('created_at', { mode: 'string' }).defaultNow().notNull(),
+})
+
+export const featureFlagAssignments = pgTable(
+  'feature_flag_assignments',
+  {
+    featureFlagId: integer()
+      .references(() => featureFlags.id, {
+        onDelete: 'cascade',
+      })
+      .notNull(),
+    userId: integer().references(() => users.id, { onDelete: 'cascade' }),
+    organizationId: integer().references(() => organizations.id, {
+      onDelete: 'cascade',
+    }),
+    value: boolean(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.userId, t.organizationId, t.featureFlagId] }),
+  ],
+)
