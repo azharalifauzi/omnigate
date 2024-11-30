@@ -47,7 +47,7 @@ describe('Auth controller API', () => {
     expect(data.otpToken).toBeDefined()
     expect(user).toBeDefined()
     expect(user?.name).toEqual('John Doe')
-    expect(sendMail).toBeCalled()
+    expect(sendMail).toHaveBeenCalledOnce()
   })
 
   test('it should return and send otp token to email for existing user', async () => {
@@ -62,7 +62,7 @@ describe('Auth controller API', () => {
     const { data } = await response.json()
 
     expect(data.otpToken).toBeDefined()
-    expect(sendMail).toBeCalled()
+    expect(sendMail).toHaveBeenCalledOnce()
   })
 
   test('it should verify otp and set session cookie', async () => {

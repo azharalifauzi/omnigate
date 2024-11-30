@@ -1,15 +1,13 @@
 import { eq, not } from 'drizzle-orm'
 import { testClient } from 'hono/testing'
-import { beforeEach, describe, expect, inject, test, vi } from 'vitest'
+import { beforeEach, describe, expect, inject, test } from 'vitest'
 import app from '~/app'
 import { db } from '~/lib/db'
 import { organizations } from '~/schemas'
 
 const headers = inject('adminUserHeaders')
 
-// Mock database operations
 beforeEach(async () => {
-  vi.clearAllMocks()
   await db.delete(organizations).where(not(eq(organizations.isDefault, true)))
 })
 

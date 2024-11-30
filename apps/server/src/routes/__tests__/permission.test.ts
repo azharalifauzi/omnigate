@@ -8,9 +8,7 @@ import { DEFAULT_PERMISSIONS } from '~/services/permissions'
 
 const headers = inject('adminUserHeaders')
 
-// Mock database operations
 beforeEach(async () => {
-  vi.clearAllMocks()
   await db.delete(permissions).where(
     not(
       inArray(

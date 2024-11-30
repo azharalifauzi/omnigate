@@ -7,9 +7,7 @@ import { roles } from '~/schemas'
 
 const headers = inject('adminUserHeaders')
 
-// Mock database operations
 beforeEach(async () => {
-  vi.clearAllMocks()
   await db.delete(roles).where(not(eq(roles.key, 'admin')))
 })
 
