@@ -26,6 +26,7 @@ import { createSessionToken } from '~/utils/session'
 import { v4 as uuidv4 } from 'uuid'
 import { authMiddleware } from '~/middlewares/auth'
 import { googleAuthScope, googleClient } from '~/lib/auth'
+import { everyPermissions } from '~/services/permissions'
 
 const app = new Hono()
   .post(
@@ -39,6 +40,19 @@ const app = new Hono()
     ),
     async (c) => {
       const { name, email } = c.req.valid('json')
+
+      const existingUser = await db.query.users.findFirst({
+        where: eq(users.email, email),
+      })
+
+      if (existingUser) {
+        throw new ServerError({
+          statusCode: 400,
+          message: 'Sign Failed',
+          description: 'User already exist, please try to login.',
+        })
+      }
+
       const user = (
         await db
           .insert(users)
@@ -131,7 +145,7 @@ const app = new Hono()
       if (!user) {
         throw new ServerError({
           statusCode: 404,
-          message: 'User not found',
+          message: 'User not found, please sign up.',
         })
       }
 
@@ -299,6 +313,17 @@ const app = new Hono()
         })
       }
 
+      const isExpired = dayjs(
+        otpObject.expiredAt.split(' ').join('T') + 'Z',
+      ).isBefore(dayjs())
+
+      if (isExpired) {
+        throw new ServerError({
+          statusCode: 401,
+          message: 'Your OTP is invalid',
+        })
+      }
+
       const sessionId = uuidv4()
       const sessionToken = createSessionToken(sessionId)
       const expiresAt = dayjs().add(7, 'days').toDate()
@@ -335,7 +360,9 @@ const app = new Hono()
   })
   .post(
     '/impersonate',
-    authMiddleware({ permission: 'write:users' }),
+    authMiddleware({
+      permission: everyPermissions(['write:users', 'read:users']),
+    }),
     zValidator('json', z.object({ userId: z.number() })),
     async (c) => {
       const { userId } = c.req.valid('json')
