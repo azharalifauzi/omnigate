@@ -1,11 +1,14 @@
+import { sql } from 'drizzle-orm'
 import {
   boolean,
+  check,
   integer,
   pgTable,
   primaryKey,
   serial,
   text,
   timestamp,
+  unique,
   varchar,
 } from 'drizzle-orm/pg-core'
 
@@ -137,18 +140,31 @@ export const featureFlags = pgTable('feature_flags', {
 export const featureFlagAssignments = pgTable(
   'feature_flag_assignments',
   {
-    featureFlagId: integer()
-      .references(() => featureFlags.id, {
-        onDelete: 'cascade',
-      })
+    id: serial('id').primaryKey(), // Surrogate primary key
+    featureFlagId: integer('feature_flag_id')
+      .references(() => featureFlags.id, { onDelete: 'cascade' })
       .notNull(),
-    userId: integer().references(() => users.id, { onDelete: 'cascade' }),
-    organizationId: integer().references(() => organizations.id, {
+    userId: integer('user_id').references(() => users.id, {
       onDelete: 'cascade',
     }),
-    value: boolean(),
+    organizationId: integer('organization_id').references(
+      () => organizations.id,
+      { onDelete: 'cascade' },
+    ),
+    value: boolean('value'),
   },
-  (t) => [
-    primaryKey({ columns: [t.userId, t.organizationId, t.featureFlagId] }),
+  (table) => [
+    unique('feature_flag_assignments_unique').on(
+      table.featureFlagId,
+      table.userId,
+      table.organizationId,
+    ),
+    check(
+      'valid_user_or_org',
+      sql`
+        (${table.userId} IS NOT NULL AND ${table.organizationId} IS NULL) OR
+        (${table.userId} IS NULL AND ${table.organizationId} IS NOT NULL)
+      `,
+    ),
   ],
 )

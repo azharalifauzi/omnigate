@@ -430,7 +430,7 @@ const app = new Hono()
           eq(featureFlagAssignments.userId, userId),
         )
         .where(eq(featureFlags.allowOverride, 'user'))
-        .groupBy(featureFlags.id)
+        .groupBy(featureFlags.id, featureFlagAssignments.value)
         .limit(size)
         .offset(skip)
         .orderBy(desc(featureFlags.createdAt))
@@ -466,7 +466,7 @@ const app = new Hono()
         throw new ServerError({
           statusCode: 404,
           message: 'Failed to assign feature flag',
-          data: 'Feature flag is not found',
+          description: 'Feature flag is not found',
         })
       }
 
@@ -474,7 +474,7 @@ const app = new Hono()
         throw new ServerError({
           statusCode: 400,
           message: 'Failed to assign feature flag',
-          data: 'Feature flag cannot be assigned to user',
+          description: 'Feature flag cannot be assigned to user',
         })
       }
 
