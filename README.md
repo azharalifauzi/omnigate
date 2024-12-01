@@ -10,11 +10,12 @@ Say goodbye to expensive third-party services! This boilerplate comes with a rob
 - **OTP-based Passwordless Login**
 - **Role-Based Access Permissions**
 - **Organization Management**
+- **Feature Flag Management**
 - **UI Dashboard for Managing Users**
 
 It's ready to use out of the box, easily extensible, and gives you complete control over your data and user management.
 
-https://github.com/user-attachments/assets/b68220d7-2a95-45f0-bf5d-ddc95513ffb2
+https://github.com/user-attachments/assets/bb2d0ba7-b6cd-4019-bd3f-7dd80873752d
 
 ## 🚀 Features
 
@@ -43,6 +44,7 @@ https://github.com/user-attachments/assets/b68220d7-2a95-45f0-bf5d-ddc95513ffb2
   - **OTP-based passwordless login**
 - **Role-Based Access Permissions**: Define and enforce permissions based on user roles seamlessly.
 - **Organization Support**: Manage multiple organizations with role-specific access within each organization.
+- **Feature Flag**: Easily manage feature flag via UI Dashboard.
 - **Built-in Dashboard UI**: Manage authentication related stuff using well crafted UI under `/admin` path.
 
 ### 🚢 Deployment Made Easy
@@ -146,13 +148,25 @@ function Component() {
 
 #### **Server Components**
 
-In server components, use the `getServerSideUserObject` utility for similar functionality.
+In server components, use the `getUserServerSession` utility for similar functionality.
 
 ```ts
-import { getServerSideUserObject } from '~/utils/server'
+import { getUserServerSession } from '~/utils/server'
 
 function Page() {
-  const { user, getPermission } = getServerSideUserObject()
+  const { user, getPermission } = getUserServerSession()
+}
+```
+
+#### **Feature Flag**
+
+You can check whether the feature flag is enabled or not using the `getFeatureFlag` function.
+
+```ts
+function Component() {
+  const { getFeatureFlag } = useUser()
+
+  const canExportPdf = getFeatureFlag('export-pdf')
 }
 ```
 
@@ -172,7 +186,7 @@ function Component() {
   )
 
   // Will return true when user has all the permissions
-  const canReadAndWriteRole = everyPermission(
+  const canReadAndWriteRole = getPermission(
     everyPermissions(['write:roles', 'read:roles']),
   )
 }
@@ -212,7 +226,7 @@ function Component() {
 - `generateJsonResponse` , this function will structurize the API response and still give the type safety.
 
 ```ts
-import { generateJsonReponse } from '~/lib/response'
+import { generateJsonResponse } from '~/lib/response'
 
 new Hono().get('/user', (c) => {
   // It will return  this
@@ -224,7 +238,7 @@ new Hono().get('/user', (c) => {
   //     name: 'John'
   //   }
   // }
-  return generateJsonReponse(c, {
+  return generateJsonResponse(c, {
     id: 1,
     name: 'John',
   })
@@ -259,13 +273,3 @@ docker-compose up --build
 ## 📜 License
 
 This project is licensed under the MIT License.
-
-## 📃 TODO:
-
-- [x] Write tests
-- [x] Documentation
-- [x] Google sign in
-- [x] Homepage
-- [ ] Feature Flags
-- [x] Fix and improve ESlint setup
-- [x] Add lint staged

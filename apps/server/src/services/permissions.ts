@@ -35,51 +35,57 @@ export interface Permission {
 
 export function somePermissions(permissions: string[]) {
   return (p: Permission[]) => {
-    return p.some(({ key }) => {
-      return permissions.includes(key)
-    })
+    const onlyKeys = p.map((p) => p.key)
+    return permissions.some((permission) => onlyKeys.includes(permission))
   }
 }
 
 export function everyPermissions(permissions: string[]) {
   return (p: Permission[]) => {
-    return p.every(({ key }) => {
-      return permissions.includes(key)
-    })
+    const onlyKeys = p.map((p) => p.key)
+    return permissions.every((permission) => onlyKeys.includes(permission))
   }
 }
 
 export const DEFAULT_PERMISSIONS = [
   {
-    name: 'write:users',
+    name: 'Write users',
     key: 'write:users',
   },
   {
-    name: 'read:users',
+    name: 'Read users',
     key: 'read:users',
   },
   {
-    name: 'write:organizations',
+    name: 'Write organizations',
     key: 'write:organizations',
   },
   {
-    name: 'read:organizations',
+    name: 'Read organizations',
     key: 'read:organizations',
   },
   {
-    name: 'write:roles',
+    name: 'Write roles',
     key: 'write:roles',
   },
   {
-    name: 'read:roles',
+    name: 'Read roles',
     key: 'read:roles',
   },
   {
-    name: 'write:permissions',
+    name: 'Write permissions',
     key: 'write:permissions',
   },
   {
-    name: 'read:permissions',
+    name: 'Read permissions',
     key: 'read:permissions',
+  },
+  {
+    name: 'Read feature flags',
+    key: 'read:feature-flags',
+  },
+  {
+    name: 'Write feature flags',
+    key: 'write:feature-flags',
   },
 ]

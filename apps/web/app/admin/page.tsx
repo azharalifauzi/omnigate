@@ -1,11 +1,11 @@
 import React from 'react'
 import AdminLayout from './_components/admin-layout'
-import { getServerSideUserObject } from '~/utils/server'
+import { getUserServerSession } from '~/utils/server'
 import { AUTH_ROUTE_CONFIG } from '~/configs/auth'
 import { notFound } from 'next/navigation'
 
 const Page = () => {
-  const { user, getPermission } = getServerSideUserObject()
+  const { user, getPermission } = getUserServerSession()
 
   const isGranted = getPermission(AUTH_ROUTE_CONFIG['/admin'].permissions)
 

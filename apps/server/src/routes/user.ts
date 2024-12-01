@@ -5,6 +5,8 @@ import { z } from 'zod'
 import { db } from '~/lib/db'
 import { authMiddleware } from '~/middlewares/auth'
 import {
+  featureFlagAssignments,
+  featureFlags,
   organizations,
   roles,
   rolesToUsers,
@@ -17,6 +19,7 @@ import { isEmail } from '~/utils'
 import { ServerError } from '../lib/error'
 import { generateJsonResponse } from '../lib/response'
 import { jsonAggBuildObjectOrEmptyArray } from '../utils/drizzle'
+import { everyPermissions } from '~/services/permissions'
 
 const app = new Hono()
   .get('/me', authMiddleware(), async (c) => {
@@ -388,6 +391,131 @@ const app = new Hono()
       await db.delete(users).where(eq(users.id, id))
 
       return generateJsonResponse(c)
+    },
+  )
+  .get(
+    '/:id/feature-flags',
+    zValidator(
+      'query',
+      z.object({
+        page: z.number({ coerce: true }).optional(),
+        size: z.number({ coerce: true }).optional(),
+      }),
+    ),
+    authMiddleware({
+      permission: everyPermissions(['read:feature-flags', 'read:users']),
+    }),
+    async (c) => {
+      const { page = 1, size = 10 } = c.req.valid('query')
+      const userId = Number(c.req.param('id'))
+      const skip = (page - 1) * size
+
+      const totalCount = await db
+        .select({
+          count: count(),
+        })
+        .from(featureFlags)
+        .where(eq(featureFlags.allowOverride, 'user'))
+
+      const pageCount = Math.ceil(totalCount[0]!.count / size)
+
+      const data = await db
+        .select({
+          ...getTableColumns(featureFlags),
+          value: featureFlagAssignments.value,
+        })
+        .from(featureFlags)
+        .leftJoin(
+          featureFlagAssignments,
+          and(
+            eq(featureFlagAssignments.featureFlagId, featureFlags.id),
+            eq(featureFlagAssignments.userId, userId),
+          ),
+        )
+        .where(eq(featureFlags.allowOverride, 'user'))
+        .groupBy(featureFlags.id, featureFlagAssignments.value)
+        .limit(size)
+        .offset(skip)
+        .orderBy(desc(featureFlags.createdAt))
+
+      return generateJsonResponse(c, {
+        data,
+        pageCount,
+        totalCount: totalCount[0]!.count,
+      })
+    },
+  )
+  .post(
+    '/:id/feature-flags',
+    zValidator(
+      'json',
+      z.object({
+        featureFlagId: z.number({ coerce: true }),
+        value: z.boolean().optional(),
+      }),
+    ),
+    authMiddleware({
+      permission: everyPermissions(['write:users', 'write:feature-flags']),
+    }),
+    async (c) => {
+      const { featureFlagId, value } = c.req.valid('json')
+      const userId = Number(c.req.param('id'))
+
+      const existingFeatureFlag = await db.query.featureFlags.findFirst({
+        where: eq(featureFlags.id, featureFlagId),
+      })
+
+      if (!existingFeatureFlag) {
+        throw new ServerError({
+          statusCode: 404,
+          message: 'Failed to assign feature flag',
+          description: 'Feature flag is not found',
+        })
+      }
+
+      if (existingFeatureFlag.allowOverride !== 'user') {
+        throw new ServerError({
+          statusCode: 400,
+          message: 'Failed to assign feature flag',
+          description: 'Feature flag cannot be assigned to user',
+        })
+      }
+
+      const existingAssignment =
+        await db.query.featureFlagAssignments.findFirst({
+          where: and(
+            eq(featureFlagAssignments.featureFlagId, featureFlagId),
+            eq(featureFlagAssignments.userId, userId),
+          ),
+        })
+
+      if (!existingAssignment) {
+        const data = await db
+          .insert(featureFlagAssignments)
+          .values({
+            featureFlagId,
+            userId,
+            value,
+          })
+          .returning()
+
+        return generateJsonResponse(c, data[0], 201)
+      }
+
+      const data = await db
+        .update(featureFlagAssignments)
+        .set({
+          value: value !== undefined ? value : null,
+        })
+        .where(
+          and(
+            eq(featureFlagAssignments.featureFlagId, featureFlagId),
+            eq(featureFlagAssignments.userId, userId),
+          ),
+        )
+        .returning()
+
+      return generateJsonResponse(c, data[0])
     },
   )
 

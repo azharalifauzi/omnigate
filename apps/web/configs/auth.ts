@@ -37,4 +37,13 @@ export const AUTH_ROUTE_CONFIG = {
   '/admin/permissions': {
     permissions: somePermissions(['read:permissions', 'write:permissions']),
   },
+  '/admin/feature-flags': {
+    permissions: somePermissions(['read:feature-flags', 'write:feature-flags']),
+  },
+  '/admin/users/[id]/feature-flags': {
+    permissions: somePermissions(['read:feature-flags', 'write:feature-flags']),
+  },
+  '/admin/organizations/[id]/feature-flags': {
+    permissions: somePermissions(['read:feature-flags', 'write:feature-flags']),
+  },
 }

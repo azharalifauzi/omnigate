@@ -27,4 +27,5 @@ export enum QueryKey {
   UserRoles = 'user-roles',
   AllRoles = 'all-roles',
   AllOrganizations = 'all-organizations',
+  FeatureFlags = 'feature-flags',
 }

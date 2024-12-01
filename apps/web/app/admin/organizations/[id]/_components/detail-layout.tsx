@@ -54,6 +54,12 @@ const OrganizationDetailLayout: React.FC<{ children?: React.ReactNode }> = ({
           >
             Users
           </Link>
+          <Link
+            className="text-lg hover:underline data-[active=true]:underline"
+            href={`/admin/organizations/${id}/feature-flags`}
+          >
+            Feature Flags
+          </Link>
         </div>
       </aside>
       <div className="fixed top-0 left-72 bottom-0 right-0 overflow-auto">

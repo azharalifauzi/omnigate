@@ -4,16 +4,14 @@ export interface Permission {
 
 export function somePermissions(permissions: string[]) {
   return (p: Permission[]) => {
-    return p.some(({ key }) => {
-      return permissions.includes(key)
-    })
+    const onlyKeys = p.map((p) => p.key)
+    return permissions.some((permission) => onlyKeys.includes(permission))
   }
 }
 
 export function everyPermissions(permissions: string[]) {
   return (p: Permission[]) => {
-    return p.every(({ key }) => {
-      return permissions.includes(key)
-    })
+    const onlyKeys = p.map((p) => p.key)
+    return permissions.every((permission) => onlyKeys.includes(permission))
   }
 }

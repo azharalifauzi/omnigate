@@ -38,6 +38,11 @@ const SIDEBAR_CONFIG = [
     href: '/admin/permissions',
     permissions: somePermissions(['read:permissions', 'write:permissions']),
   },
+  {
+    text: 'Feature Flags',
+    href: '/admin/feature-flags',
+    permissions: somePermissions(['read:feature-flags', 'write:feature-flags']),
+  },
 ]
 
 const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {

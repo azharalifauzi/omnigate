@@ -1,12 +1,19 @@
 import { db } from '~/lib/db'
 import { authMiddleware } from '~/middlewares/auth'
-import { organizations, users, usersToOrganizations } from '~/schemas'
+import {
+  featureFlagAssignments,
+  featureFlags,
+  organizations,
+  users,
+  usersToOrganizations,
+} from '~/schemas'
 import { zValidator } from '@hono/zod-validator'
-import { count, desc, eq, getTableColumns } from 'drizzle-orm'
+import { and, count, desc, eq, getTableColumns } from 'drizzle-orm'
 import { Hono } from 'hono'
 import { z } from 'zod'
 import { generateJsonResponse } from '../lib/response'
 import { ServerError } from '~/lib/error'
+import { everyPermissions } from '~/services/permissions'
 
 const app = new Hono()
   .get(
@@ -176,6 +183,134 @@ const app = new Hono()
       await db.delete(organizations).where(eq(organizations.id, Number(id)))
 
       return generateJsonResponse(c)
+    },
+  )
+  .get(
+    '/:id/feature-flags',
+    zValidator(
+      'query',
+      z.object({
+        page: z.number({ coerce: true }).optional(),
+        size: z.number({ coerce: true }).optional(),
+      }),
+    ),
+    authMiddleware({
+      permission: everyPermissions(['read:feature-flags', 'read:users']),
+    }),
+    async (c) => {
+      const { page = 1, size = 10 } = c.req.valid('query')
+      const organizationId = Number(c.req.param('id'))
+      const skip = (page - 1) * size
+
+      const totalCount = await db
+        .select({
+          count: count(),
+        })
+        .from(featureFlags)
+        .where(eq(featureFlags.allowOverride, 'organization'))
+
+      const pageCount = Math.ceil(totalCount[0]!.count / size)
+
+      const data = await db
+        .select({
+          ...getTableColumns(featureFlags),
+          value: featureFlagAssignments.value,
+        })
+        .from(featureFlags)
+        .leftJoin(
+          featureFlagAssignments,
+          and(
+            eq(featureFlagAssignments.featureFlagId, featureFlags.id),
+            eq(featureFlagAssignments.organizationId, organizationId),
+          ),
+        )
+        .where(eq(featureFlags.allowOverride, 'organization'))
+        .groupBy(featureFlags.id, featureFlagAssignments.value)
+        .limit(size)
+        .offset(skip)
+        .orderBy(desc(featureFlags.createdAt))
+
+      return generateJsonResponse(c, {
+        data,
+        pageCount,
+        totalCount: totalCount[0]!.count,
+      })
+    },
+  )
+  .post(
+    '/:id/feature-flags',
+    zValidator(
+      'json',
+      z.object({
+        featureFlagId: z.number({ coerce: true }),
+        value: z.boolean().optional(),
+      }),
+    ),
+    authMiddleware({
+      permission: everyPermissions([
+        'write:organizations',
+        'write:feature-flags',
+      ]),
+    }),
+    async (c) => {
+      const { featureFlagId, value } = c.req.valid('json')
+      const organizationId = Number(c.req.param('id'))
+
+      const existingFeatureFlag = await db.query.featureFlags.findFirst({
+        where: eq(featureFlags.id, featureFlagId),
+      })
+
+      if (!existingFeatureFlag) {
+        throw new ServerError({
+          statusCode: 404,
+          message: 'Failed to assign feature flag',
+          description: 'Feature flag is not found',
+        })
+      }
+
+      if (existingFeatureFlag.allowOverride !== 'organization') {
+        throw new ServerError({
+          statusCode: 400,
+          message: 'Failed to assign feature flag',
+          description: 'Feature flag cannot be assigned to organization',
+        })
+      }
+
+      const existingAssignment =
+        await db.query.featureFlagAssignments.findFirst({
+          where: and(
+            eq(featureFlagAssignments.featureFlagId, featureFlagId),
+            eq(featureFlagAssignments.organizationId, organizationId),
+          ),
+        })
+
+      if (!existingAssignment) {
+        const data = await db
+          .insert(featureFlagAssignments)
+          .values({
+            featureFlagId,
+            organizationId,
+            value,
+          })
+          .returning()
+
+        return generateJsonResponse(c, data[0], 201)
+      }
+
+      const data = await db
+        .update(featureFlagAssignments)
+        .set({
+          value: value !== undefined ? value : null,
+        })
+        .where(
+          and(
+            eq(featureFlagAssignments.featureFlagId, featureFlagId),
+            eq(featureFlagAssignments.organizationId, organizationId),
+          ),
+        )
+        .returning()
+
+      return generateJsonResponse(c, data[0])
     },
   )
 

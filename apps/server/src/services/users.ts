@@ -1,6 +1,12 @@
-import { eq, getTableColumns } from 'drizzle-orm'
+import { isNull, eq, getTableColumns, inArray, and, or } from 'drizzle-orm'
 import { db } from '~/lib/db'
-import { organizations, users, usersToOrganizations } from '~/schemas'
+import {
+  featureFlagAssignments,
+  featureFlags,
+  organizations,
+  users,
+  usersToOrganizations,
+} from '~/schemas'
 import { jsonAggBuildObjectOrEmptyArray } from '~/utils/drizzle'
 import { getPermissionByUserId } from './permissions'
 
@@ -23,13 +29,72 @@ export const getUserById = async (userId: number) => {
     .groupBy(users.id)
     .where(eq(users.id, userId))
 
-  const userPermissions = await getPermissionByUserId(userId)
+  const userData = user[0]
 
-  if (!user[0]) {
+  if (!userData) {
     return null
   }
 
-  return { ...user[0], permissions: userPermissions }
+  const userPermissions = await getPermissionByUserId(userId)
+  const featureFlags = await getFeatureFlagsByUserId(
+    userId,
+    userData.organizations.map((org) => org.id),
+  )
+
+  return { ...userData, featureFlags, permissions: userPermissions }
+}
+
+const getFeatureFlagsByUserId = async (
+  userId: number,
+  organizationIds?: number[],
+) => {
+  const globalFlags = await db.query.featureFlags.findMany({
+    where: or(
+      isNull(featureFlags.allowOverride),
+      eq(featureFlags.allowOverride, 'organization'),
+    ),
+  })
+  const userLevelFlags = await db
+    .select({
+      ...getTableColumns(featureFlags),
+      value: featureFlagAssignments.value,
+    })
+    .from(featureFlags)
+    .leftJoin(
+      featureFlagAssignments,
+      and(
+        eq(featureFlagAssignments.organizationId, featureFlags.id),
+        eq(featureFlagAssignments.userId, userId),
+      ),
+    )
+    .groupBy(featureFlags.id, featureFlagAssignments.value)
+    .where(eq(featureFlags.allowOverride, 'user'))
+
+  const organizationLevelFlags = await db
+    .select({
+      ...getTableColumns(featureFlags),
+      value: featureFlagAssignments.value,
+      organizationId: featureFlagAssignments.organizationId,
+    })
+    .from(featureFlags)
+    .leftJoin(
+      featureFlagAssignments,
+      eq(featureFlagAssignments.featureFlagId, featureFlags.id),
+    )
+    .groupBy(
+      featureFlags.id,
+      featureFlagAssignments.value,
+      featureFlagAssignments.organizationId,
+    )
+    .where(
+      inArray(featureFlagAssignments.organizationId, organizationIds ?? []),
+    )
+
+  return {
+    global: globalFlags,
+    user: userLevelFlags,
+    organizations: organizationLevelFlags,
+  }
 }
 
 export const updateUserById = async (

@@ -2,7 +2,7 @@ import { type User } from '@repo/server'
 import { headers } from 'next/headers'
 import { type Permission } from './auth'
 
-export const getServerSideUserObject = () => {
+export const getUserServerSession = () => {
   const userObject = headers().get('User-Object')
 
   const user = userObject ? (JSON.parse(userObject) as User) : null
@@ -32,8 +32,34 @@ export const getServerSideUserObject = () => {
     return permission(orgPermissions.permissions)
   }
 
+  function getFeatureFlag(featureFlag: string, orgId?: number) {
+    const userLevelFlag = user?.featureFlags.user.find(
+      (f) => f.key === featureFlag,
+    )
+
+    if (userLevelFlag) {
+      return userLevelFlag.value ?? userLevelFlag.defaultValue
+    }
+
+    if (orgId) {
+      const orgLevelFlag = user?.featureFlags.organizations.find(
+        (f) => f.key === featureFlag && f.organizationId === orgId,
+      )
+
+      if (orgLevelFlag) {
+        return orgLevelFlag.value ?? orgLevelFlag.defaultValue
+      }
+    }
+
+    return (
+      user?.featureFlags.global.find((f) => f.key === featureFlag)
+        ?.defaultValue ?? false
+    )
+  }
+
   return {
     user,
     getPermission,
+    getFeatureFlag,
   }
 }

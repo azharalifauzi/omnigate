@@ -1,11 +1,11 @@
-import { getServerSideUserObject } from '~/utils/server'
+import { getUserServerSession } from '~/utils/server'
 import { Button } from '@repo/ui/components/ui/button'
 import Link from '~/components/link'
 import { SiGithub } from '@icons-pack/react-simple-icons'
 import { match } from 'ts-pattern'
 
 export default function Page() {
-  const { user } = getServerSideUserObject()
+  const { user } = getUserServerSession()
 
   return (
     <main className="flex items-center justify-center min-h-screen">
