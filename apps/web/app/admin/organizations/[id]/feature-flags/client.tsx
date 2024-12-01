@@ -4,24 +4,24 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import Pagination from '~/components/pagination'
 import { client, QueryKey, unwrapResponse } from '~/utils/fetcher'
-import { useGetUserById } from '../../_hooks'
-import UserDetailLayout from '../_components/detail-layout'
+import OrganizationDetailLayout from '../_components/detail-layout'
 import FeatureFlagTable from './_components/table'
+import { useParams } from 'next/navigation'
 
 const FeatureFlagsFeature = () => {
   const [page, setPage] = useState(1)
-
-  const { data: user } = useGetUserById()
+  const params = useParams<{ id: string }>()
+  const id = params?.id
 
   const { data } = useQuery({
-    queryKey: [QueryKey.FeatureFlags, 'user', user?.id, page],
+    queryKey: [QueryKey.FeatureFlags, 'organizations', id, page],
     queryFn: async () => {
-      const res = client.api.v1.user[':id']['feature-flags'].$get({
+      const res = client.api.v1.organization[':id']['feature-flags'].$get({
         query: {
           page: page.toString(),
         },
         param: {
-          id: user?.id?.toString() ?? '',
+          id: id?.toString() ?? '',
         },
       })
 
@@ -30,11 +30,11 @@ const FeatureFlagsFeature = () => {
       return json.data
     },
     placeholderData: keepPreviousData,
-    enabled: !!user?.id,
+    enabled: !!id,
   })
 
   return (
-    <UserDetailLayout name={user?.name ?? ''}>
+    <OrganizationDetailLayout>
       <div className="px-10 pt-20 pb-10">
         <div className="flex justify-between mb-2">
           <h1 className="text-3xl font-medium">Feature Flags</h1>
@@ -49,7 +49,7 @@ const FeatureFlagsFeature = () => {
           />
         </div>
       </div>
-    </UserDetailLayout>
+    </OrganizationDetailLayout>
   )
 }
 

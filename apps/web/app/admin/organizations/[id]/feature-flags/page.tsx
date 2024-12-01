@@ -7,7 +7,7 @@ const Page = () => {
   const { getPermission } = getServerSideUserObject()
 
   const isGranted = getPermission(
-    AUTH_ROUTE_CONFIG['/admin/users/[id]/feature-flags'].permissions,
+    AUTH_ROUTE_CONFIG['/admin/organizations/[id]/feature-flags'].permissions,
   )
 
   if (!isGranted) {

@@ -199,7 +199,7 @@ const app = new Hono()
     }),
     async (c) => {
       const { page = 1, size = 10 } = c.req.valid('query')
-      const userId = Number(c.req.param('id'))
+      const organizationId = Number(c.req.param('id'))
       const skip = (page - 1) * size
 
       const totalCount = await db
@@ -219,10 +219,10 @@ const app = new Hono()
         .from(featureFlags)
         .leftJoin(
           featureFlagAssignments,
-          eq(featureFlagAssignments.userId, userId),
+          eq(featureFlagAssignments.organizationId, organizationId),
         )
         .where(eq(featureFlags.allowOverride, 'organization'))
-        .groupBy(featureFlags.id)
+        .groupBy(featureFlags.id, featureFlagAssignments.value)
         .limit(size)
         .offset(skip)
         .orderBy(desc(featureFlags.createdAt))
@@ -261,15 +261,15 @@ const app = new Hono()
         throw new ServerError({
           statusCode: 404,
           message: 'Failed to assign feature flag',
-          data: 'Feature flag is not found',
+          description: 'Feature flag is not found',
         })
       }
 
-      if (existingFeatureFlag.allowOverride !== 'user') {
+      if (existingFeatureFlag.allowOverride !== 'organization') {
         throw new ServerError({
           statusCode: 400,
           message: 'Failed to assign feature flag',
-          data: 'Feature flag cannot be assigned to user',
+          description: 'Feature flag cannot be assigned to organization',
         })
       }
 
