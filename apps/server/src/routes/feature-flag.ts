@@ -73,7 +73,7 @@ const app = new Hono()
       z.object({
         name: z.string(),
         key: z.string(),
-        description: z.string(),
+        description: z.string().optional(),
         allowOverride: z.enum(['user', 'organization']).optional(),
         defaultValue: z.boolean(),
       }),
