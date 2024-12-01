@@ -219,7 +219,10 @@ const app = new Hono()
         .from(featureFlags)
         .leftJoin(
           featureFlagAssignments,
-          eq(featureFlagAssignments.organizationId, organizationId),
+          and(
+            eq(featureFlagAssignments.featureFlagId, featureFlags.id),
+            eq(featureFlagAssignments.organizationId, organizationId),
+          ),
         )
         .where(eq(featureFlags.allowOverride, 'organization'))
         .groupBy(featureFlags.id, featureFlagAssignments.value)

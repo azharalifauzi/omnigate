@@ -427,7 +427,10 @@ const app = new Hono()
         .from(featureFlags)
         .leftJoin(
           featureFlagAssignments,
-          eq(featureFlagAssignments.userId, userId),
+          and(
+            eq(featureFlagAssignments.featureFlagId, featureFlags.id),
+            eq(featureFlagAssignments.userId, userId),
+          ),
         )
         .where(eq(featureFlags.allowOverride, 'user'))
         .groupBy(featureFlags.id, featureFlagAssignments.value)
