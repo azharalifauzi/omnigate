@@ -2,7 +2,7 @@ import { type User } from '@repo/server'
 import { headers } from 'next/headers'
 import { type Permission } from './auth'
 
-export const getServerSideUserObject = () => {
+export const getUserServerSession = () => {
   const userObject = headers().get('User-Object')
 
   const user = userObject ? (JSON.parse(userObject) as User) : null

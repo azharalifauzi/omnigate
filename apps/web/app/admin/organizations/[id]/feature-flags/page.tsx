@@ -1,10 +1,10 @@
-import { getServerSideUserObject } from '~/utils/server'
+import { getUserServerSession } from '~/utils/server'
 import FeatureFlagFeature from './client'
 import { AUTH_ROUTE_CONFIG } from '~/configs/auth'
 import { notFound } from 'next/navigation'
 
 const Page = () => {
-  const { getPermission } = getServerSideUserObject()
+  const { getPermission } = getUserServerSession()
 
   const isGranted = getPermission(
     AUTH_ROUTE_CONFIG['/admin/organizations/[id]/feature-flags'].permissions,
