@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer'
+import nodemailer, { SendMailOptions } from 'nodemailer'
 import { env } from '~/env'
 
 export const transporter = nodemailer.createTransport({
@@ -9,3 +9,10 @@ export const transporter = nodemailer.createTransport({
     pass: env.SMTP_PASSWORD,
   },
 })
+
+export function sendMail(mailOptions: SendMailOptions) {
+  return transporter.sendMail({
+    ...mailOptions,
+    to: env.NODE_ENV === 'development' ? env.EMAIL_CATCHER : mailOptions.to,
+  })
+}

@@ -8,7 +8,7 @@ import { customAlphabet } from 'nanoid'
 import { z } from 'zod'
 import { env } from '~/env'
 import { db } from '~/lib/db'
-import { transporter } from '~/lib/email'
+import { sendMail } from '~/lib/email'
 import VerifyOtpEmail from '~/lib/email/templates/verify-otp'
 import { ServerError } from '~/lib/error'
 import { generateJsonResponse } from '~/lib/response'
@@ -115,9 +115,9 @@ const app = new Hono()
 
       // Send otp to email
       const emailHtml = await render(<VerifyOtpEmail otpCode={otp} />)
-      await transporter.sendMail({
+      await sendMail({
         from: env.EMAIL_SENDER,
-        to: env.NODE_ENV === 'development' ? env.EMAIL_CATCHER : user.email,
+        to: user.email,
         subject: 'Email verification code',
         html: emailHtml,
       })
@@ -171,9 +171,9 @@ const app = new Hono()
 
       // Send otp to email
       const emailHtml = await render(<VerifyOtpEmail otpCode={otp} />)
-      await transporter.sendMail({
+      await sendMail({
         from: env.EMAIL_SENDER,
-        to: env.NODE_ENV === 'development' ? env.EMAIL_CATCHER : user.email,
+        to: user.email,
         subject: 'Email verification code',
         html: emailHtml,
       })
@@ -434,9 +434,9 @@ const app = new Hono()
 
       // Send otp to email
       const emailHtml = await render(<VerifyOtpEmail otpCode={newOtp} />)
-      await transporter.sendMail({
+      await sendMail({
         from: env.EMAIL_SENDER,
-        to: env.NODE_ENV === 'development' ? env.EMAIL_CATCHER : user.email,
+        to: user.email,
         subject: 'Email verification code',
         html: emailHtml,
       })
