@@ -290,6 +290,8 @@ If you wish to deploy using Coolify you can follow the config below, and don't f
 
 By following config above, you will run Coolify build using Docker, and pointing your domain to port 3000, and for everything under `/api` route will be pointed to port 4000.
 
+When deploying to Coolify, basically you don't need nginx inside Docker container, so you can choose the `single-file.Dockerfile` instead of the one that has nginx.
+
 ## 📜 License
 
 This project is licensed under the MIT License.
