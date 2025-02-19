@@ -44,9 +44,7 @@ app.onError(async (err, c) => {
     return c.json(error.response, error.response.statusCode)
   }
 
-  if (!isProduction) {
-    console.log(err)
-  }
+  console.error(err)
 
   if (err instanceof Error) {
     const error: Error = err
