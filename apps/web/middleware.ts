@@ -42,8 +42,7 @@ export async function middleware(request: NextRequest) {
   let backendUrl = redirectBaseUrl
 
   if (isRunningDockerCompose()) {
-    rewriteBaseUrl =
-      protocol === 'http://' ? `http://web:3000` : 'http://server:4000'
+    rewriteBaseUrl = 'http://web:3000'
     backendUrl = 'http://server:4000'
   }
 
@@ -51,7 +50,7 @@ export async function middleware(request: NextRequest) {
     rewriteBaseUrl =
       protocol === 'http://'
         ? `http://host.docker.internal:${port}`
-        : 'http://localhost:4000'
+        : 'http://localhost:3000'
     backendUrl = 'http://localhost:4000'
   }
 
