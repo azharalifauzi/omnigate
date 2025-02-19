@@ -14,7 +14,8 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "start": "NODE_ENV=production tsx src/index.ts",
-    "build": "ncc build src/index.ts -o dist",
+    "build": "ncc build src/index.ts -o dist/app -m -s && pnpm build:script",
+    "build:script": "ncc build scripts/migrate.ts -o dist/migrate -m && ncc build scripts/seed.ts -o dist/seed -m",
     "lint": "eslint .",
     "create:migration": "drizzle-kit generate",
     "migrate": "tsx scripts/migrate.ts",

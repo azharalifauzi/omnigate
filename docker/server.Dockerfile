@@ -38,9 +38,13 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 honojs
 
 COPY --from=installer --chown=honojs:nodejs /app/apps/server/dist .
+COPY --from=installer --chown=honojs:nodejs /app/apps/server/drizzle ./migrate/drizzle
+COPY --from=installer --chown=honojs:nodejs /app/apps/server/drizzle ./seed/drizzle
 
 USER honojs
 
 EXPOSE 4000
 
-CMD node index.js
+ENV IS_DOCKER_COMPOSE="true"
+
+CMD node app/index.js

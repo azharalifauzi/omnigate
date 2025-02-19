@@ -22,7 +22,6 @@ services:
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI}
       - NODE_ENV=production
-      - IS_DOCKER=true
   web:
     container_name: omnigate-web
     build:
@@ -30,6 +29,7 @@ services:
       dockerfile: ./docker/web.Dockerfile
     environment:
       - SESSION_COOKIE_NAME=${SESSION_COOKIE_NAME}
+      - NODE_ENV=production
   nginx:
     image: nginx:alpine
     ports:

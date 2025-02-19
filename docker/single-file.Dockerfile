@@ -12,6 +12,7 @@ RUN yarn global add turbo
 COPY . .
 RUN turbo prune web @repo/server --docker
 
+# --- Build Image ---
 FROM base AS builder
 RUN apk add --no-cache libc6-compat
 RUN apk update
@@ -28,7 +29,7 @@ RUN pnpm i --frozen-lockfile
 COPY --from=pruner /app/out/full/ .
 RUN pnpm run build
 
-# --- Final Image with Nginx ---
+# --- Final Image ---
 FROM alpine:latest AS runner
 
 # Install Node.js runtime
@@ -46,6 +47,8 @@ COPY --from=builder --chown=omnigate:nodejs /app/apps/web/.next/standalone ./fro
 COPY --from=builder --chown=omnigate:nodejs /app/apps/web/.next/static ./frontend/standalone/apps/web/.next/static
 COPY --from=builder --chown=omnigate:nodejs /app/apps/web/public ./frontend/standalone/apps/web/public
 COPY --from=builder --chown=omnigate:nodejs /app/apps/server/dist ./backend
+COPY --from=builder --chown=omnigate:nodejs /app/apps/server/drizzle ./backend/migrate/drizzle
+COPY --from=builder --chown=omnigate:nodejs /app/apps/server/drizzle ./backend/seed/drizzle
 
 USER omnigate
 
@@ -58,4 +61,4 @@ ENV IS_SINGLE_FILE_DOCKER="true"
 ENV NODE_ENV="production"
 
 # Start backend & frontend in the background, then run Nginx
-CMD PORT=3000 node /app/frontend/standalone/apps/web/server.js & PORT=4000 node /app/backend/index.js
+CMD PORT=3000 node /app/frontend/standalone/apps/web/server.js & PORT=4000 node /app/backend/app/index.js
