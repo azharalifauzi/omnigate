@@ -10,6 +10,17 @@ const isProtectedRoute = (pathname: string) => {
 
 const AUTH_PAGES_PATH = ['/login', '/sign-up', '/verify-otp']
 
+import fs from 'fs'
+
+function isRunningInDocker(): boolean {
+  try {
+    const cgroup = fs.readFileSync('/proc/1/cgroup', 'utf8')
+    return cgroup.includes('docker')
+  } catch (err) {
+    return false // If `/proc/1/cgroup` is not readable, assume not in Docker
+  }
+}
+
 export async function middleware(request: NextRequest) {
   const session = request.cookies.get(env.SESSION_COOKIE_NAME)
   const host = request.headers.get('host')!
@@ -20,7 +31,7 @@ export async function middleware(request: NextRequest) {
     : `https://${host.split(':')[0]}`
   let rewriteBaseUrl = redirectBaseUrl
 
-  if (env.IS_DOCKER) {
+  if (isRunningInDocker()) {
     rewriteBaseUrl = host.startsWith('localhost:')
       ? `http://host.docker.internal:${host.split(':')[1]}`
       : `https://${host.split(':')[0]}`
@@ -31,10 +42,11 @@ export async function middleware(request: NextRequest) {
   }
 
   const userAgent = request.headers.get('User-Agent')
+  const ipAddress = request.headers.get('X-Real-IP') || 'anon'
   const headers = new Headers()
 
-  headers.set('X-Forwarded-For', request.ip || 'anon')
-  headers.set('X-Real-IP', request.ip || 'anon')
+  headers.set('X-Forwarded-For', ipAddress)
+  headers.set('X-Real-IP', ipAddress)
   headers.set('Cookie', request.cookies.toString())
   if (userAgent) {
     headers.set('User-Agent', userAgent)

@@ -4,8 +4,8 @@ import Link from '~/components/link'
 import { SiGithub } from '@icons-pack/react-simple-icons'
 import { match } from 'ts-pattern'
 
-export default function Page() {
-  const { user } = getUserServerSession()
+export default async function Page() {
+  const { user } = await getUserServerSession()
 
   return (
     <main className="flex items-center justify-center min-h-screen">

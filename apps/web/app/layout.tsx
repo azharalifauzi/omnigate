@@ -13,17 +13,17 @@ export const metadata: Metadata = {
   icons: '/favicon.svg',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
-}): JSX.Element {
+}) {
   /**
    * NOTE: using headers() causing dynamic rendering, which make SSG not working,
    * If you still want to use SSG on some route, you can just move this headers()
    * and UserContextProvider to admin/layout.tsx or somewhere else that need the user object
    */
-  const headerList = headers()
+  const headerList = await headers()
   const userObject = headerList.get('user-object')
 
   return (

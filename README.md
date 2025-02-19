@@ -154,7 +154,7 @@ In server components, use the `getUserServerSession` utility for similar functio
 import { getUserServerSession } from '~/utils/server'
 
 function Page() {
-  const { user, getPermission } = getUserServerSession()
+  const { user, getPermission } = await getUserServerSession()
 }
 ```
 
