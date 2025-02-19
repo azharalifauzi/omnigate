@@ -11,7 +11,7 @@ export const rateLimiter = () =>
   createMiddleware(async (c, next) => {
     const ip = c.req.header('x-forwarded-for') || c.req.header('x-real-ip')
 
-    if (!ip) {
+    if (!ip || ip === 'internal') {
       return await next()
     }
 
