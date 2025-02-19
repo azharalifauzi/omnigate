@@ -45,6 +45,6 @@ USER nextjs
 EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
-ENV IS_DOCKER="true"
+ENV IS_DOCKER_COMPOSE="true"
 
 CMD node next/standalone/apps/web/server.js

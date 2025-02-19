@@ -10,8 +10,12 @@ const isProtectedRoute = (pathname: string) => {
 
 const AUTH_PAGES_PATH = ['/login', '/sign-up', '/verify-otp']
 
-function isRunningDocker(): boolean {
-  return process.env.IS_DOCKER === 'true'
+function isRunningDockerCompose(): boolean {
+  return process.env.IS_DOCKER_COMPOSE === 'true'
+}
+
+function isRunningSingleFileDocker(): boolean {
+  return process.env.IS_SINGLE_FILE_DOCKER === 'true'
 }
 
 const HTTP_PORT_TO_PROTOCOL_MAP: Record<string, string> = {
@@ -35,12 +39,20 @@ export async function middleware(request: NextRequest) {
 
   const redirectBaseUrl = `${protocol}${hostname}${port ? `:${port}` : ''}`
   let rewriteBaseUrl = redirectBaseUrl
+  let backendUrl = redirectBaseUrl
 
-  if (isRunningDocker()) {
+  if (isRunningDockerCompose()) {
+    rewriteBaseUrl =
+      protocol === 'http://' ? `http://web:3000` : 'http://server:4000'
+    backendUrl = 'http://server:4000'
+  }
+
+  if (isRunningSingleFileDocker()) {
     rewriteBaseUrl =
       protocol === 'http://'
         ? `http://host.docker.internal:${port}`
-        : `http://localhost:4000`
+        : 'http://localhost:4000'
+    backendUrl = 'http://localhost:4000'
   }
 
   if (!session && isProtectedRoute(pathname)) {
@@ -64,7 +76,7 @@ export async function middleware(request: NextRequest) {
 
   try {
     const res = await ofetch(
-      new URL('/api/v1/user/me', rewriteBaseUrl).toString(),
+      new URL('/api/v1/user/me', backendUrl).toString(),
       {
         headers,
       },

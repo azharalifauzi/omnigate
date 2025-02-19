@@ -29,7 +29,10 @@ COPY --from=pruner /app/out/full/ .
 RUN pnpm run build
 
 # --- Final Image with Nginx ---
-FROM base AS runner
+FROM alpine:latest AS runner
+
+# Install Node.js runtime
+RUN apk add --no-cache nodejs
 
 WORKDIR /app
 
@@ -51,7 +54,7 @@ EXPOSE 3000
 EXPOSE 4000
 
 ENV HOSTNAME="0.0.0.0"
-ENV IS_DOCKER="true"
+ENV IS_SINGLE_FILE_DOCKER="true"
 ENV NODE_ENV="production"
 
 # Start backend & frontend in the background, then run Nginx
