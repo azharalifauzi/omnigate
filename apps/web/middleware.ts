@@ -33,7 +33,7 @@ export async function middleware(request: NextRequest) {
   const [hostname, port] = host.split(':')
   const protocol = getProtocol(port)
 
-  const redirectBaseUrl = `${protocol}${hostname}:${port}`
+  const redirectBaseUrl = `${protocol}${hostname}${port ? `:${port}` : ''}`
   let rewriteBaseUrl = redirectBaseUrl
 
   if (isRunningDocker()) {
