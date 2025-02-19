@@ -50,7 +50,7 @@ https://github.com/user-attachments/assets/bb2d0ba7-b6cd-4019-bd3f-7dd80873752d
 ### 🚢 Deployment Made Easy
 
 - **Dockerized Deployment**: Comes with Docker Compose and optimized Dockerfiles, making it a breeze to deploy to platforms like [Coolify](https://coolify.io/) or [Caprover](https://caprover.com/).
-- **Small Docker Image Size**: It only takes up 400 MB for all services (Frontend, Backend, and Nginx).
+- **Small Docker Image Size**: It only takes up 182 MB using single container mode, and 400 MB if using docker compose for all services (Frontend, Backend, and Nginx).
 
 ### 🌟 Full Control
 
@@ -263,11 +263,23 @@ new Hono().get('/user', () => {
 
 ## 📦 Deployment
 
-Deploy easily using Docker:
+### Deploy easily using Docker Compose:
 
 ```bash
 # App wil run on port 3000
 docker-compose up --build
+```
+
+### Single Container Option
+
+Using single container will make your final image even smaller (only 182 MB), and it would be easier to deploy to services like Coolify.
+
+```bash
+# Build the image
+docker build -t omnigate -f docker/single-file-with-nginx.Dockerfile .
+
+# Run container
+docker run --add-host=host.docker.internal:host-gateway -p 8080:8080 omnigate
 ```
 
 ## 📜 License

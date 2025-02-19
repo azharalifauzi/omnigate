@@ -3,7 +3,6 @@ import { type NextRequest } from 'next/server'
 import { env } from './env'
 import { ofetch } from 'ofetch'
 import { type User } from '@repo/server'
-import fs from 'fs'
 
 const isProtectedRoute = (pathname: string) => {
   return pathname.startsWith('/admin')
@@ -11,13 +10,8 @@ const isProtectedRoute = (pathname: string) => {
 
 const AUTH_PAGES_PATH = ['/login', '/sign-up', '/verify-otp']
 
-function isRunningInDocker(): boolean {
-  try {
-    const cgroup = fs.readFileSync('/proc/1/cgroup', 'utf8')
-    return cgroup.includes('docker')
-  } catch (err) {
-    return false // If `/proc/1/cgroup` is not readable, assume not in Docker
-  }
+function isRunningDocker(): boolean {
+  return process.env.IS_DOCKER === 'true'
 }
 
 const HTTP_PORT_TO_PROTOCOL_MAP: Record<string, string> = {
@@ -42,10 +36,10 @@ export async function middleware(request: NextRequest) {
   const redirectBaseUrl = `${protocol}${hostname}:${port}`
   let rewriteBaseUrl = redirectBaseUrl
 
-  if (isRunningInDocker()) {
+  if (isRunningDocker()) {
     rewriteBaseUrl =
       protocol === 'http://'
-        ? `http://host.docker.internal:${port}}`
+        ? `http://host.docker.internal:${port}`
         : `https://${hostname}`
   }
 
@@ -83,6 +77,7 @@ export async function middleware(request: NextRequest) {
 
     return nextFn
   } catch (error) {
+    console.log(error)
     if (isProtectedRoute(pathname)) {
       return NextResponse.rewrite(new URL('/not-found', rewriteBaseUrl))
     }
