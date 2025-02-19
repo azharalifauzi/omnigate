@@ -10,15 +10,10 @@ export const env = createEnv({
   server: {
     SESSION_COOKIE_NAME: z.string(),
     BACKEND_URL: z.string().url().default('http://localhost:4000'),
-    IS_DOCKER: z
-      .enum(['true', 'false'])
-      .transform((value) => value === 'true')
-      .default('false'),
   },
   runtimeEnv: {
     SESSION_COOKIE_NAME: process.env.SESSION_COOKIE_NAME,
     BACKEND_URL: process.env.BACKEND_URL,
     NODE_ENV: process.env.NODE_ENV,
-    IS_DOCKER: process.env.IS_DOCKER,
   },
 })

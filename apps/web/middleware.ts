@@ -3,14 +3,13 @@ import { type NextRequest } from 'next/server'
 import { env } from './env'
 import { ofetch } from 'ofetch'
 import { type User } from '@repo/server'
+import fs from 'fs'
 
 const isProtectedRoute = (pathname: string) => {
   return pathname.startsWith('/admin')
 }
 
 const AUTH_PAGES_PATH = ['/login', '/sign-up', '/verify-otp']
-
-import fs from 'fs'
 
 function isRunningInDocker(): boolean {
   try {
@@ -21,20 +20,33 @@ function isRunningInDocker(): boolean {
   }
 }
 
+const HTTP_PORT_TO_PROTOCOL_MAP: Record<string, string> = {
+  '80': 'http://',
+  '443': 'https://',
+}
+
+// This function will assume if there's no port, means it run in production
+// that uses https protocol
+function getProtocol(port: string | undefined) {
+  return port ? (HTTP_PORT_TO_PROTOCOL_MAP[port] ?? 'http://') : 'https://'
+}
+
 export async function middleware(request: NextRequest) {
   const session = request.cookies.get(env.SESSION_COOKIE_NAME)
   const host = request.headers.get('host')!
   const { pathname } = request.nextUrl
 
-  const redirectBaseUrl = host.startsWith('localhost:')
-    ? `http://${host}`
-    : `https://${host.split(':')[0]}`
+  const [hostname, port] = host.split(':')
+  const protocol = getProtocol(port)
+
+  const redirectBaseUrl = `${protocol}${hostname}:${port}`
   let rewriteBaseUrl = redirectBaseUrl
 
   if (isRunningInDocker()) {
-    rewriteBaseUrl = host.startsWith('localhost:')
-      ? `http://host.docker.internal:${host.split(':')[1]}`
-      : `https://${host.split(':')[0]}`
+    rewriteBaseUrl =
+      protocol === 'http://'
+        ? `http://host.docker.internal:${port}}`
+        : `https://${hostname}`
   }
 
   if (!session && isProtectedRoute(pathname)) {
