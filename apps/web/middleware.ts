@@ -48,11 +48,8 @@ export async function middleware(request: NextRequest) {
   }
 
   const userAgent = request.headers.get('User-Agent')
-  const ipAddress = request.headers.get('X-Forwarded-For') || 'anon'
   const headers = new Headers()
 
-  headers.set('X-Forwarded-For', ipAddress)
-  headers.set('X-Real-IP', ipAddress)
   headers.set('Cookie', request.cookies.toString())
   if (userAgent) {
     headers.set('User-Agent', userAgent)
@@ -77,7 +74,6 @@ export async function middleware(request: NextRequest) {
 
     return nextFn
   } catch (error) {
-    console.log(error)
     if (isProtectedRoute(pathname)) {
       return NextResponse.rewrite(new URL('/not-found', rewriteBaseUrl))
     }

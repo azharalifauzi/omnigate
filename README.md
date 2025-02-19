@@ -282,6 +282,14 @@ docker build -t omnigate -f docker/single-file-with-nginx.Dockerfile .
 docker run --add-host=host.docker.internal:host-gateway -p 8080:8080 omnigate
 ```
 
+### Deploying with Coolify
+
+If you wish to deploy using Coolify you can follow the config below, and don't forget to setup environment variables under "Environment Variables" tab.
+
+<img width="911" alt="image" src="https://github.com/user-attachments/assets/7c2b6697-5a37-4a91-a750-294b13fb8372" />
+
+By following config above, you will run Coolify build using Docker, and pointing your domain to port 3000, and for everything under `/api` route will be pointed to port 4000.
+
 ## 📜 License
 
 This project is licensed under the MIT License.
