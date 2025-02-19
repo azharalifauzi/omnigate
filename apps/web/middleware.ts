@@ -48,7 +48,7 @@ export async function middleware(request: NextRequest) {
   }
 
   const userAgent = request.headers.get('User-Agent')
-  const ipAddress = request.headers.get('X-Real-IP') || 'anon'
+  const ipAddress = request.headers.get('X-Forwarded-For') || 'anon'
   const headers = new Headers()
 
   headers.set('X-Forwarded-For', ipAddress)
