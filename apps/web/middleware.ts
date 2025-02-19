@@ -50,9 +50,15 @@ export async function middleware(request: NextRequest) {
   const userAgent = request.headers.get('User-Agent')
   const headers = new Headers()
 
+  console.log('Here middleware: x-real-ip', request.headers.get('x-real-ip'))
+  console.log(
+    'Here middleware: x-forwarded-for',
+    request.headers.get('x-forwarded-for'),
+  )
+
   // Set x-real-ip and x-forwarded-for header to "internal" to avoid middleware hit rate limit
   headers.set('x-real-ip', 'internal')
-  headers.set('x-forwareded-for', 'internal')
+  headers.set('x-forwarded-for', 'internal')
 
   headers.set('Cookie', request.cookies.toString())
   if (userAgent) {
