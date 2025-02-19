@@ -4,8 +4,8 @@ import { getUserServerSession } from '~/utils/server'
 import { AUTH_ROUTE_CONFIG } from '~/configs/auth'
 import { notFound } from 'next/navigation'
 
-const Page = () => {
-  const { user, getPermission } = getUserServerSession()
+const Page = async () => {
+  const { user, getPermission } = await getUserServerSession()
 
   const isGranted = getPermission(AUTH_ROUTE_CONFIG['/admin'].permissions)
 
