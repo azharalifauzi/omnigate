@@ -43,7 +43,8 @@ COPY --from=installer --chown=nextjs:nodejs /app/apps/web/public ./next/standalo
 USER nextjs
 
 EXPOSE 3000
-ENV PORT 3000
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+ENV IS_DOCKER_COMPOSE="true"
 
-ENV HOSTNAME "0.0.0.0"
 CMD node next/standalone/apps/web/server.js

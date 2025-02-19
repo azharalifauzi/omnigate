@@ -21,10 +21,6 @@ export const env = createEnv({
     S3_SPACES_ENDPOINT: z.string(),
     S3_SPACES_SECRET_KEY: z.string(),
     S3_SPACES_ACCESS_KEY_ID: z.string(),
-    IS_DOCKER: z
-      .enum(['true', 'false'])
-      .transform((value) => value === 'true')
-      .default('false'),
     GOOGLE_CLIENT_ID: z.string(),
     GOOGLE_CLIENT_SECRET: z.string(),
     GOOGLE_REDIRECT_URI: z.string(),
@@ -44,7 +40,6 @@ export const env = createEnv({
     S3_SPACES_SECRET_KEY: process.env.S3_SPACES_SECRET_KEY,
     S3_SPACES_ACCESS_KEY_ID: process.env.S3_SPACES_ACCESS_KEY_ID,
     NODE_ENV: process.env.NODE_ENV,
-    IS_DOCKER: process.env.IS_DOCKER,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     GOOGLE_REDIRECT_URI: process.env.GOOGLE_REDIRECT_URI,

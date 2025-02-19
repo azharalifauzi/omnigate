@@ -50,7 +50,7 @@ https://github.com/user-attachments/assets/bb2d0ba7-b6cd-4019-bd3f-7dd80873752d
 ### 🚢 Deployment Made Easy
 
 - **Dockerized Deployment**: Comes with Docker Compose and optimized Dockerfiles, making it a breeze to deploy to platforms like [Coolify](https://coolify.io/) or [Caprover](https://caprover.com/).
-- **Small Docker Image Size**: It only takes up 400 MB for all services (Frontend, Backend, and Nginx).
+- **Small Docker Image Size**: It only takes up 143 MB using single container mode, and 400 MB if using docker compose for all services (Frontend, Backend, and Nginx).
 
 ### 🌟 Full Control
 
@@ -263,12 +263,32 @@ new Hono().get('/user', () => {
 
 ## 📦 Deployment
 
-Deploy easily using Docker:
+### Deploy easily using Docker Compose:
 
 ```bash
 # App wil run on port 3000
 docker-compose up --build
 ```
+
+### Single Container Option
+
+Using single container will make your final image even smaller (only 143 MB), and it would be easier to deploy to services like Coolify.
+
+```bash
+# Build the image
+docker build -t omnigate -f docker/single-file.Dockerfile .
+
+# Run container
+docker run --name omnigate --env-file .env --add-host=host.docker.internal:host-gateway -p 3000:3000 omnigate
+```
+
+### Deploying with Coolify
+
+If you wish to deploy using Coolify you can follow the config below, and don't forget to setup environment variables under "Environment Variables" tab.
+
+<img width="911" alt="image" src="https://github.com/user-attachments/assets/7c2b6697-5a37-4a91-a750-294b13fb8372" />
+
+By following config above, you will run Coolify build using Docker, and pointing your domain to port 3000, and for everything under `/api` route will be pointed to port 4000.
 
 ## 📜 License
 

@@ -10,7 +10,6 @@ import featureFlag from './routes/feature-flag'
 import { logger } from './middlewares/logger'
 import { ServerError } from './lib/error'
 import { secureHeaders } from 'hono/secure-headers'
-import { csrf } from 'hono/csrf'
 import { rateLimiter } from './middlewares/rate-limiter'
 import { env } from './env'
 
@@ -20,9 +19,15 @@ const app = new Hono()
 // NOTE: Compress doesn't work with Bun for now
 app.use(compress())
 app.use(logger())
-if (isProduction) {
-  app.use(csrf())
-}
+
+// NOTE: Enable this on production and add origin as an option for extra security
+// example:
+// app.use(csrf({ origin: ['mydomain.com'] }))
+
+// if (isProduction) {
+//   app.use(csrf())
+// }
+
 app.use('*', secureHeaders())
 app.use('*', rateLimiter())
 
@@ -44,9 +49,7 @@ app.onError(async (err, c) => {
     return c.json(error.response, error.response.statusCode)
   }
 
-  if (!isProduction) {
-    console.log(err)
-  }
+  console.error(err)
 
   if (err instanceof Error) {
     const error: Error = err

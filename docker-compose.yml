@@ -17,6 +17,7 @@ services:
       - SMTP_HOST=${SMTP_HOST}
       - SMTP_PORT=${SMTP_PORT}
       - EMAIL_SENDER=${EMAIL_SENDER}
+      - EMAIL_CATCHER=${EMAIL_CATCHER}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI}
@@ -29,13 +30,12 @@ services:
       dockerfile: ./docker/web.Dockerfile
     environment:
       - SESSION_COOKIE_NAME=${SESSION_COOKIE_NAME}
-      - IS_DOCKER=true
   nginx:
     image: nginx:alpine
     ports:
       - '3000:80'
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/nginx-with-compose.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - server
       - web

@@ -10,15 +10,23 @@ const isProtectedRoute = (pathname: string) => {
 
 const AUTH_PAGES_PATH = ['/login', '/sign-up', '/verify-otp']
 
-import fs from 'fs'
+function isRunningDockerCompose(): boolean {
+  return process.env.IS_DOCKER_COMPOSE === 'true'
+}
 
-function isRunningInDocker(): boolean {
-  try {
-    const cgroup = fs.readFileSync('/proc/1/cgroup', 'utf8')
-    return cgroup.includes('docker')
-  } catch (err) {
-    return false // If `/proc/1/cgroup` is not readable, assume not in Docker
-  }
+function isRunningSingleFileDocker(): boolean {
+  return process.env.IS_SINGLE_FILE_DOCKER === 'true'
+}
+
+const HTTP_PORT_TO_PROTOCOL_MAP: Record<string, string> = {
+  '80': 'http://',
+  '443': 'https://',
+}
+
+// This function will assume if there's no port, means it run in production
+// that uses https protocol
+function getProtocol(port: string | undefined) {
+  return port ? (HTTP_PORT_TO_PROTOCOL_MAP[port] ?? 'http://') : 'https://'
 }
 
 export async function middleware(request: NextRequest) {
@@ -26,27 +34,40 @@ export async function middleware(request: NextRequest) {
   const host = request.headers.get('host')!
   const { pathname } = request.nextUrl
 
-  const redirectBaseUrl = host.startsWith('localhost:')
-    ? `http://${host}`
-    : `https://${host.split(':')[0]}`
-  let rewriteBaseUrl = redirectBaseUrl
+  const [hostname, port] = host.split(':')
+  const protocol = getProtocol(port)
 
-  if (isRunningInDocker()) {
-    rewriteBaseUrl = host.startsWith('localhost:')
-      ? `http://host.docker.internal:${host.split(':')[1]}`
-      : `https://${host.split(':')[0]}`
+  const redirectBaseUrl = `${protocol}${hostname}${port ? `:${port}` : ''}`
+  let rewriteBaseUrl = redirectBaseUrl
+  let backendUrl = redirectBaseUrl
+
+  if (isRunningDockerCompose()) {
+    rewriteBaseUrl = 'http://web:3000'
+    backendUrl = 'http://server:4000'
+  }
+
+  if (isRunningSingleFileDocker()) {
+    rewriteBaseUrl =
+      protocol === 'http://'
+        ? `http://host.docker.internal:${port}`
+        : 'http://localhost:3000'
+    backendUrl = 'http://localhost:4000'
   }
 
   if (!session && isProtectedRoute(pathname)) {
     return NextResponse.rewrite(new URL('/not-found', rewriteBaseUrl))
   }
 
-  const userAgent = request.headers.get('User-Agent')
-  const ipAddress = request.headers.get('X-Real-IP') || 'anon'
   const headers = new Headers()
 
-  headers.set('X-Forwarded-For', ipAddress)
-  headers.set('X-Real-IP', ipAddress)
+  const userAgent = request.headers.get('User-Agent')
+  const xRealIp = request.headers.get('x-real-ip') || 'anon'
+  const xForwardedFor =
+    request.headers.get('x-forwarded-for')?.split(',')[0] || 'anon'
+
+  headers.set('x-real-ip', xRealIp)
+  headers.set('x-forwarded-for', xForwardedFor)
+
   headers.set('Cookie', request.cookies.toString())
   if (userAgent) {
     headers.set('User-Agent', userAgent)
@@ -54,7 +75,7 @@ export async function middleware(request: NextRequest) {
 
   try {
     const res = await ofetch(
-      new URL('/api/v1/user/me', rewriteBaseUrl).toString(),
+      new URL('/api/v1/user/me', backendUrl).toString(),
       {
         headers,
       },
