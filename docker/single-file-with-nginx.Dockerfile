@@ -60,6 +60,7 @@ EXPOSE 8080
 
 ENV HOSTNAME="0.0.0.0"
 ENV IS_DOCKER="true"
+ENV NODE_ENV="production"
 
 # Start backend & frontend in the background, then run Nginx
 CMD node /app/backend/index.js & node /app/frontend/standalone/apps/web/server.js & nginx -g "daemon off;"
