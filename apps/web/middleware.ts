@@ -40,25 +40,22 @@ export async function middleware(request: NextRequest) {
     rewriteBaseUrl =
       protocol === 'http://'
         ? `http://host.docker.internal:${port}`
-        : `https://${hostname}`
+        : `http://localhost:4000`
   }
 
   if (!session && isProtectedRoute(pathname)) {
     return NextResponse.rewrite(new URL('/not-found', rewriteBaseUrl))
   }
 
-  const userAgent = request.headers.get('User-Agent')
   const headers = new Headers()
 
-  console.log('Here middleware: x-real-ip', request.headers.get('x-real-ip'))
-  console.log(
-    'Here middleware: x-forwarded-for',
-    request.headers.get('x-forwarded-for'),
-  )
+  const userAgent = request.headers.get('User-Agent')
+  const xRealIp = request.headers.get('x-real-ip') || 'anon'
+  const xForwardedFor =
+    request.headers.get('x-forwarded-for')?.split(',')[0] || 'anon'
 
-  // Set x-real-ip and x-forwarded-for header to "internal" to avoid middleware hit rate limit
-  headers.set('x-real-ip', 'internal')
-  headers.set('x-forwarded-for', 'internal')
+  headers.set('x-real-ip', xRealIp)
+  headers.set('x-forwarded-for', xForwardedFor)
 
   headers.set('Cookie', request.cookies.toString())
   if (userAgent) {
