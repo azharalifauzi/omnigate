@@ -30,13 +30,13 @@
     "@types/eslint": "catalog:",
     "@types/node": "catalog:",
     "@types/nodemailer": "^6.4.17",
-    "@types/pg": "^8.11.10",
+    "@types/pg": "^8.11.11",
     "@types/react": "catalog:react19",
     "@types/simple-oauth2": "^5.0.7",
     "@vercel/ncc": "^0.38.3",
     "eslint": "catalog:",
     "typescript": "catalog:",
-    "vitest": "^2.1.5"
+    "vitest": "^3.0.6"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.750.0",
@@ -48,8 +48,8 @@
     "@t3-oss/env-core": "^0.12.0",
     "chalk": "^5.4.1",
     "dayjs": "catalog:",
-    "drizzle-kit": "^0.28.1",
-    "drizzle-orm": "^0.36.3",
+    "drizzle-kit": "^0.30.4",
+    "drizzle-orm": "^0.39.3",
     "hono": "catalog:",
     "nanoid": "^5.1.0",
     "nodemailer": "^6.10.0",
