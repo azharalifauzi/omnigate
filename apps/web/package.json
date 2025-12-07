@@ -19,7 +19,7 @@
     "dayjs": "catalog:",
     "hono": "catalog:",
     "lucide-react": "catalog:",
-    "next": "15.1.7",
+    "next": "15.1.9",
     "nuqs": "^2.4.0",
     "ofetch": "^1.4.1",
     "react": "catalog:react19",
