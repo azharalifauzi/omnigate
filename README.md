@@ -1,3 +1,5 @@
+
+
 # Omnigate: The Ultimate Next.js Boilerplate for Self-Hosting
 
 This boilerplate is your one-stop solution for building full-stack, production-ready applications with built-in authentication. Whether you're a solo developer or part of a team, this project ensures a top-notch Developer Experience (DX) and smooth deployment process. So you can focus on what matters like building and shipping features.
@@ -30,7 +32,7 @@ https://github.com/user-attachments/assets/bb2d0ba7-b6cd-4019-bd3f-7dd80873752d
   - [Next.js](https://nextjs.org/)
   - [shadcn](https://ui.shadcn.com/)
   - [Tailwind CSS](https://tailwindcss.com/)
-  - [@tanstack/react-query](https://tanstack.com/query/v4)
+  - [@tanstack/react-query](https://tanstack.com/query/latest)
 - **Backend**:
   - 🔥 [Hono.js](https://hono.dev/)
   - [PostgreSQL](https://www.postgresql.org/)
